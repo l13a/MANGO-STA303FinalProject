@@ -25,6 +25,8 @@ output:
 library(tidyverse)
 library(polite)
 library(rvest)
+library(sf)
+library(geojsonsf)
 ```
 
 # Loading client data
@@ -44,6 +46,33 @@ library(rvest)
 # Census API
 
 ```{r}
+# install.packages("cancensus")
+library(cancensus)
+
+
+options(cancensus.api_key = "CensusMapper_62d5b97e34abdba3579b1900089c724a",
+        cancensus.cache_path = "cache") # this sets a folder for your cache
+
+
+# get all regions as at the 2016 Census (2020 not up yet)
+regions <- list_census_regions(dataset = "CA16")
+
+regions_filtered <-  regions %>% 
+  filter(level == "CSD") %>% # Figure out what CSD means in Census data
+  as_census_region_list()
+
+# This can take a while
+# We want to get household median income
+census_data_csd <- get_census(dataset='CA16', regions = regions_filtered,
+                          vectors=c("v_CA16_2397"), 
+                          level='CSD', geo_format = "sf")
+
+# Simplify to only needed variables
+median_income <- census_data_csd %>% 
+  as_tibble() %>% 
+  select(CSDuid = GeoUID, contains("median"), Population) %>% 
+  mutate(CSDuid = parse_number(CSDuid)) %>% 
+  rename(hhld_median_inc = 2)
 
 ```
 
