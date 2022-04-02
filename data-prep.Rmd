@@ -30,7 +30,11 @@ library(rvest)
 # Loading client data
 
 ```{r}
-
+break_glass_in_case_of_emergency <- readRDS("./data-raw/break_glass_in_case_of_emergency.Rds")
+cust_dev <- readRDS("./data-raw/cust_dev.Rds")
+cust_sleep <- readRDS("./data-raw/cust_sleep.Rds")
+customer <- readRDS("./data-raw/customer.Rds")
+device <- readRDS("./data-raw/device.Rds")
 ```
 
 # Getting external data
