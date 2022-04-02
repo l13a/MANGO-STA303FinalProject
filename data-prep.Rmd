@@ -66,6 +66,17 @@ device_data <- html %>%
 ```
 
 # Census API
+Used the most recent census data as most of the sleep data recorded are from 2022. We want the most up to date information s possible for the postal codes of people as they were wearing the devices. 
+```{r}
+library(haven)
+dataset = read_sav("data-raw/pccfNat_fccpNat_082021sav.sav")
+
+postcode <- dataset %>% 
+  select(PC, CSDuid)
+```
+
+
+# Income Data
 
 ```{r}
 # install.packages("cancensus")
