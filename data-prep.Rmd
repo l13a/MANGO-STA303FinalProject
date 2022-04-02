@@ -32,7 +32,11 @@ library(geojsonsf)
 # Loading client data
 
 ```{r}
-
+break_glass_in_case_of_emergency <- readRDS("./data-raw/break_glass_in_case_of_emergency.Rds")
+cust_dev <- readRDS("./data-raw/cust_dev.Rds")
+cust_sleep <- readRDS("./data-raw/cust_sleep.Rds")
+customer <- readRDS("./data-raw/customer.Rds")
+device <- readRDS("./data-raw/device.Rds")
 ```
 
 # Getting external data
@@ -40,6 +44,24 @@ library(geojsonsf)
 ## Web scraping industry data
 
 ```{r}
+url <- "https://fitnesstrackerinfohub.netlify.app/"
+
+# Make sure this code is updated appropriately to provide 
+# informative user_agent details
+target <- bow(url,
+              user_agent = "xinyil.chen@mail.utoronto.ca for STA303/1002 project",
+              force = TRUE)
+
+# Any details provided in the robots text on crawl delays and 
+# which agents are allowed to scrape
+target
+
+html <- scrape(target)
+
+device_data <- html %>% 
+  html_elements("table") %>% 
+  html_table() %>% 
+  pluck(1) # added, in case you're getting a list format
 
 ```
 
