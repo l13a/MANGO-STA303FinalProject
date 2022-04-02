@@ -22,7 +22,9 @@ output:
 
 ```{r, libraries}
 # Set up any libraries you need
-
+library(tidyverse)
+library(polite)
+library(rvest)
 ```
 
 # Loading client data
