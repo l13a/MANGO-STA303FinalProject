@@ -20,7 +20,7 @@ output:
 
 # Set up
 
-```{r, libraries}
+```{r, libraries, message=FALSE}
 # Set up any libraries you need
 library(tidyverse)
 library(polite)
@@ -64,6 +64,15 @@ device_data <- html %>%
   pluck(1) # added, in case you're getting a list format
 
 ```
+
+```{r}
+device_data$Released <- as.Date(device_data$Released, "%Y-%m-%d")
+
+device_data$ReleasedYr <- format(device_data$Released, format="%Y")
+
+device_data$ReleasedF <- as.factor(device_data$Released)
+```
+
 
 # Census API
 
