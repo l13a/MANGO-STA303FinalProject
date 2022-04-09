@@ -23,6 +23,7 @@ library(rvest)
 library(polite)
 library(lmtest)
 library()
+library(wesanderson)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -84,6 +85,9 @@ _For each research question, you will want to briefly describe any data manipula
 device_cust <-read.csv("./data/device_cust.csv")
 ```
 
+```{r}
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2")) 
+```
 
 
 
