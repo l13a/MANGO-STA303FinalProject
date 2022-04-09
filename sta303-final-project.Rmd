@@ -23,6 +23,7 @@ library(rvest)
 library(polite)
 library(lmtest)
 library()
+library(wesanderson)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -67,23 +68,30 @@ _This part of the report is much more comprehensive than the executive summary. 
 _Provide a brief introduction to your report and outline what the report will cover. This section is valuable for setting scope and expectations. _
 
 ### Research questions
-_Use bullet points to to describe the research questions you are going to address. Write in full sentences._
+- How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
+
+- Are the devices “racist”?
+
+- What are the main differences between different lines of the device?
+
 
 ## Informative title for section addressing a research question
 
 _For each research question, you will want to briefly describe any data manipulation, show some exploratory plots/summary tables, report on any methods you use (i.e. models you fit) and the conclusions you draw from these_
 
+
+
 ```{r}
-# This chunk provides an example of some things you can do with RMarkdown 
-
-# read in the data (this will only work once you've set up the data!)
-device_data <- read_csv("data-raw/device.Rds")
-
-# create a visualization
-device_data %>% 
-  ggplot(aes(x = ))
-
+device_cust <-read.csv("./data/device_cust.csv")
 ```
+
+```{r}
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2")) 
+```
+
+
+
+
 
 ## Informative title for section addressing a research question
 
