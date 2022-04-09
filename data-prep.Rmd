@@ -27,6 +27,8 @@ library(polite)
 library(rvest)
 library(sf)
 library(geojsonsf)
+install.packages("eeptools")
+library(eeptools)
 ```
 
 # Loading client data
@@ -118,6 +120,11 @@ median_income <- census_data_csd %>%
 ```{r}
 device_cust_id <- cust_dev %>% full_join(device, by = "dev_id")
 device_cust <-device_cust_id %>% full_join(customer, by = "cust_id")
+
+device_cust$dob <- as.Date(device_cust$dob)
+device_cust$age <- floor(age_calc(device_cust$dob, units = "years"))
+
+
 
 #write_csv(device_cust_id, file = "./data/device_cust_id.csv")
 #write_csv(device_cust, file = "./data/device_cust.csv")

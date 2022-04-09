@@ -78,17 +78,16 @@ _Provide a brief introduction to your report and outline what the report will co
 
 _For each research question, you will want to briefly describe any data manipulation, show some exploratory plots/summary tables, report on any methods you use (i.e. models you fit) and the conclusions you draw from these_
 
+
+
 ```{r}
-# This chunk provides an example of some things you can do with RMarkdown 
-
-# read in the data (this will only work once you've set up the data!)
-device_data <- read_csv("data-raw/device.Rds")
-
-# create a visualization
-device_data %>% 
-  ggplot(aes(x = ))
-
+device_cust <-read.csv("./data/device_cust.csv")
 ```
+
+
+
+
+
 
 ## Informative title for section addressing a research question
 
