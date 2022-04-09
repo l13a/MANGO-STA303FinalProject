@@ -22,7 +22,6 @@ library(lme4)
 library(rvest)
 library(polite)
 library(lmtest)
-library()
 library(wesanderson)
 
 # this should suppress all code and messages
@@ -93,7 +92,20 @@ device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  f
 
 
 
-## Informative title for section addressing a research question
+## How does race affect the accuracy of wearable devices?
+
+```{r}
+race_sleep_data <- read.csv("./data/race_sleep_data.csv")
+skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
+
+race_sleep_data <- race_sleep_data %>%
+  mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
+
+race_sleep_data %>% ggplot(aes(skin_tone, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
+
+race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_linedraw()
+
+```
 
 
 ## What are the main differences between different lines of the device?
