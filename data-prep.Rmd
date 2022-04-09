@@ -133,15 +133,21 @@ device_cust$age <- floor(age_calc(device_cust$dob, units = "years"))
 
 ### "racist data"
 ```{r}
-race_sleep_data <- customer %>% full_join(cust_sleep, by = "cust_id") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags") %>% filter(!is.na(date)) %>% filter(!is.na(duration)) %>% filter(!is.na(flags)) %>% filter(!is.na(emoji_modifier))
+race_sleep_data <- customer %>% 
+  full_join(cust_sleep, by = "cust_id") %>% 
+  select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags") %>%
+  filter(!is.na(date)) %>%
+  filter(!is.na(duration)) %>%
+  filter(!is.na(flags)) %>%
+  filter(!is.na(emoji_modifier))
 
-race_sleep_data <- race_sleep_data %>% full_join(cust_dev, by = "cust_id") 
+race_sleep_data <- race_sleep_data %>% left_join(cust_dev, by = "cust_id") 
 
-race_sleep_data <- race_sleep_data %>% full_join(device, by = "dev_id") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "dev_id", "device_name")
+race_sleep_data <- race_sleep_data %>% left_join(device, by = "dev_id") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "dev_id", "device_name")
 
 device_data <- device_data %>% janitor::clean_names() 
 
-race_sleep_data <- race_sleep_data %>% full_join(device_data, by = "device_name") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "device_name", "line", "battery_life", "water_resitance", "heart_rate_sensor", "pulse_oximiter", "gps", "sleep_tracking", "smart_notifications")
+race_sleep_data <- race_sleep_data %>% left_join(device_data, by = "device_name") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "device_name", "line", "battery_life", "water_resitance", "heart_rate_sensor", "pulse_oximiter", "gps", "sleep_tracking", "smart_notifications")
 
 #put in data folder
 write_csv(race_sleep_data, file = "data/race_sleep_data.csv")
