@@ -67,7 +67,12 @@ _This part of the report is much more comprehensive than the executive summary. 
 _Provide a brief introduction to your report and outline what the report will cover. This section is valuable for setting scope and expectations. _
 
 ### Research questions
-_Use bullet points to to describe the research questions you are going to address. Write in full sentences._
+- How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
+
+- Are the devices “racist”?
+
+- What are the main differences between different lines of the device?
+
 
 ## Informative title for section addressing a research question
 

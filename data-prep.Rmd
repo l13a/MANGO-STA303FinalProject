@@ -116,9 +116,16 @@ median_income <- census_data_csd %>%
 ### demographic data
 
 ```{r}
-device_cust_id <- cust_dev %>% full_join(device, by = "dev_id")%>% select(c(1, 2, 4))
+device_cust_id <- cust_dev %>% full_join(device, by = "dev_id")
 device_cust <-device_cust_id %>% full_join(customer, by = "cust_id")
+
+#write_csv(device_cust_id, file = "./data/device_cust_id.csv")
+#write_csv(device_cust, file = "./data/device_cust.csv")
 ```
+
+
+
+
 
 ### "racist data"
 
