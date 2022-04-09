@@ -96,6 +96,32 @@ device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  f
 ## Informative title for section addressing a research question
 
 
+## What are the main differences between different lines of the device?
+
+```{r warning=FALSE}
+device_data %>% 
+  ggplot(aes(x = Released, y = `Recommended retail price`, color = Brand, shape = Brand)) +
+  geom_point(size = 4) +
+  labs(title = "Recommeded Retail price vs Released Date", 
+       x = "Released Date",
+       y = "Recommended Retail Price",
+       caption = "Created by Mango in 2022") +
+  theme_minimal()
+```
+
+```{r}
+device_data %>% 
+  ggplot(aes(y = ReleasedYr, color = Brand, fill = Brand)) +
+  geom_bar(stat="count") +
+  labs(title = "Number of realesed products vs Released Year", 
+       x = "Released Year",
+       y = "Number of Reealsed products",
+       caption = "Created by Mango in 2022") +
+  theme_minimal()
+```
+
+
+
 ## Discussion
 
 _In this section you will summarize your findings across all the research questions and discuss the strengths and limitations of your work. It doesn't have to be long, but keep in mind that often people will just skim the intro and the discussion of a document like this, so make sure it is useful as a semi-standalone section (doesn't have to be completely standalone like the executive summary)._
