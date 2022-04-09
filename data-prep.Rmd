@@ -29,6 +29,7 @@ library(sf)
 library(geojsonsf)
 library(eeptools)
 library(janitor)
+library(plyr)
 ```
 
 # Loading client data
@@ -124,6 +125,7 @@ device_cust <-device_cust_id %>% full_join(customer, by = "cust_id")
 device_cust$dob <- as.Date(device_cust$dob)
 device_cust$age <- floor(age_calc(device_cust$dob, units = "years"))
 
+device_cust <- unique(inner_join(device_cust, postcode, by="postcode") )
 
 
 #write_csv(device_cust_id, file = "./data/device_cust_id.csv")
