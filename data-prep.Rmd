@@ -73,6 +73,40 @@ device_data$Released <- as.Date(device_data$Released, "%Y-%m-%d")
 device_data$ReleasedYr <- format(device_data$Released, format="%Y")
 
 device_data$ReleasedF <- as.factor(device_data$Released)
+
+device_data$`Battery life` <- as.factor(device_data$`Battery life`)
+
+device_data <- device_data %>% 
+  mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 3 days", after = 0)) %>% 
+  mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 5 days", after = 1)) %>%
+  mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 7 days", after = 2)) %>% 
+  mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 14 days", after = 3)) %>% 
+  mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 21 days", after = 4))
+
+device_data$`Water resitance` <- as.factor(device_data$`Water resitance`)
+device_data <- device_data %>% 
+  mutate(`Water resitance` = fct_relevel(`Water resitance`, "Resistant", after = 0)) %>% 
+  mutate(`Water resitance` = fct_relevel(`Water resitance`, "Waterproof", after = 1)) %>%
+  mutate(`Water resitance` = fct_relevel(`Water resitance`, "Waterproof, 5 ATM", after = 2)) %>% 
+  mutate(`Water resitance` = fct_relevel(`Water resitance`, "Waterproof, 10 ATM", after = 3))
+
+device_data$`Heart rate sensor` <- as.factor(device_data$`Heart rate sensor`)
+device_data$`Pulse oximiter` <- as.factor(device_data$`Pulse oximiter`)
+device_data$GPS <- as.factor(device_data$GPS)
+device_data$`Sleep tracking` <- as.factor(device_data$`Sleep tracking`)
+device_data$`Smart notifications` <- as.factor(device_data$`Smart notifications`)
+device_data$`Contactless payments` <- as.factor(device_data$`Contactless payments`)
+
+write_csv(device_data, file = "./data/device_data.csv")
+
+device_performance <- device_data %>% 
+  select(c(Line, `Heart rate sensor`, `Pulse oximiter`, GPS, `Sleep tracking`, `Smart notifications`, `Contactless payments`)) %>% 
+  pivot_longer(-c(Line), names_to = "name", values_to = "value") %>% 
+  group_by(Line, name, value) %>% 
+  summarise(n = n(  ))
+
+device_performance
+write_csv(device_performance, file = "./data/device_performance.csv")
 ```
 
 
@@ -97,7 +131,6 @@ write.csv(postcode, "data/customer_with_postal.csv", row.names=FALSE, quote=FALS
 # install.packages("cancensus")
 library(cancensus)
 
-
 options(cancensus.api_key = "CensusMapper_62d5b97e34abdba3579b1900089c724a",
         cancensus.cache_path = "cache") # this sets a folder for your cache
 
@@ -121,6 +154,8 @@ median_income <- census_data_csd %>%
   select(CSDuid = GeoUID, contains("median"), Population) %>% 
   mutate(CSDuid = parse_number(CSDuid)) %>% 
   rename(hhld_median_inc = 2)
+
+write_csv(median_income, file="./data/median_income.csv")
 
 ```
 

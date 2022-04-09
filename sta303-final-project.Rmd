@@ -22,8 +22,9 @@ library(lme4)
 library(rvest)
 library(polite)
 library(lmtest)
-library()
 library(wesanderson)
+library(ggplot2)
+library(gplots)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -98,28 +99,87 @@ device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  f
 
 ## What are the main differences between different lines of the device?
 
-```{r warning=FALSE}
+- Use wearable device data
+- performance/price difference among the different lines of services, combined with the different demographic of the users between lines, we can give a report summary/advice for what has changed and how the change affects the target audience
+
+```{r}
+device_data <- read.csv("./data/device_data.csv")
+device_cust <- read.csv("./data/device_cust.csv")
+```
+
+
+```{r}
+library(RColorBrewer)
 device_data %>% 
-  ggplot(aes(x = Released, y = `Recommended retail price`, color = Brand, shape = Brand)) +
+  ggplot(aes(x = Released, y = `Recommended.retail.price`, color = Line, shape = Brand)) +
   geom_point(size = 4) +
+  scale_color_brewer(palette="Spectral") +
   labs(title = "Recommeded Retail price vs Released Date", 
        x = "Released Date",
        y = "Recommended Retail Price",
+       caption = "Created by Mango in 2022")
+```
+
+```{r}
+device_data %>% 
+  ggplot(aes(y = ReleasedYr, color = Line, fill = Line)) +
+  geom_bar(stat="count") +
+  scale_color_brewer(palette="Spectral") +
+  scale_fill_brewer(palette="Spectral") +
+  labs(title = "Number of realesed products vs Released Year", 
+       y = "Released Year",
+       x = "Number of Reealsed products",
        caption = "Created by Mango in 2022") +
   theme_minimal()
 ```
 
 ```{r}
+# Batterty Lives
 device_data %>% 
-  ggplot(aes(y = ReleasedYr, color = Brand, fill = Brand)) +
+  ggplot(aes(y = `Battery.life`, color = Line, fill = Line)) +
   geom_bar(stat="count") +
-  labs(title = "Number of realesed products vs Released Year", 
+  scale_color_brewer(palette="Spectral") +
+  scale_fill_brewer(palette="Spectral") +
+  labs(title = "Number of realesed products vs Batttery Life", 
        x = "Released Year",
-       y = "Number of Reealsed products",
+       y = "Battery Life",
        caption = "Created by Mango in 2022") +
   theme_minimal()
 ```
 
+```{r}
+# Waterproof
+device_data %>% 
+  ggplot(aes(y = `Water.resitance`, color = Line, fill = Line)) +
+  geom_bar(stat="count") +
+  scale_color_brewer(palette="Spectral") +
+  scale_fill_brewer(palette="Spectral") +
+  labs(title = "Number of realesed products vs Batttery Life", 
+       x = "Released Year",
+       y = "Battery Life",
+       caption = "Created by Mango in 2022") +
+  theme_minimal()
+```
+```{r}
+# Other performance
+library(ggpubr)
+ggballoonplot(device_performance, 
+              x="Line", 
+              y="name", 
+              size = "n", 
+              fill = "n",
+              facet.by = "value") +
+  scale_fill_viridis_c(option = "C")
+```
+```{r}
+device_cust %>% 
+  ggplot(aes(y=line))+
+  geom_bar() +
+  labs(title = "Number of clients using the product in each line", 
+       x = "Count",
+       y = "Line",
+       caption = "Created by Mango in 2022")
+```
 
 
 ## Discussion
