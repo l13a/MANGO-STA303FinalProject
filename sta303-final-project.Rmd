@@ -128,6 +128,8 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 
 ![Customer location by device line](./data/province_line.png)
 
+
+
 ### Age of customers
 
 To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot below, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line.
@@ -171,6 +173,7 @@ device_cust$sex_binary <-  ifelse(device_cust$sex == "Female", 1, 0)
 device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
 t.test(sex_binary~ line_binary, data = device_cust, var.equal = TRUE)
 ```
+
 
 
 ```{r}
