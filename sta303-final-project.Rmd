@@ -114,8 +114,8 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 ```
 
 ```{r include=F}
- province_data %>% 
-   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
+# province_data %>% 
+#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  #marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
 # 
 # province_data_advance %>%
 #   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
@@ -132,14 +132,12 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 
 ### Age of customers
 
-To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot below, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line.
-
 ```{r fig.cap="Age of customer by device line", include=T, echo=F, fig.height=3}
 
-device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))+ theme(legend.position="none")
 ```
 
-We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, `line`.
+To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot above, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line. We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, `line`.
 
 #### Assumption Checking
 
@@ -161,7 +159,7 @@ To test whether the customers gender in new and traditional lines are different.
 
 ```{r fig.cap="Sex of customer by device line", include=T, echo=F, fig.height=2}
 device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
-device_cust %>% ggplot(aes(x = sex, fill=line_binary)) + geom_bar() +  facet_wrap("line_binary") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))
+device_cust %>% ggplot(aes(x = sex, fill=line_binary)) + geom_bar() +  facet_wrap("line_binary") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))+ theme(legend.position="none")
 ```
 
 #### Two Sample t-test
@@ -175,23 +173,20 @@ t.test(sex_binary~ line_binary, data = device_cust, var.equal = TRUE)
 
 ### Income of customers
 
-```{r fig.cap="Sex of customer by device line", include=T, echo=F, fig.height=2}
+```{r fig.cap="Household income of customer by device line", include=T, echo=F, fig.height=2}
 income <-  read.csv("./data/median_income.csv")
 
 group_income <- inner_join(device_cust, income, by = "CSDuid") %>% select(c("line","line_binary", "hhld_median_inc"))
-group_income %>% ggplot(aes(x= hhld_median_inc, fill = line_binary)) + geom_histogram(bins = 30) + facet_wrap("line_binary") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))
+group_income %>% ggplot(aes(x= hhld_median_inc, fill = line_binary)) + geom_histogram(bins = 30) + facet_wrap("line_binary") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3")) + theme(legend.position="none") + labs(x="household income")
 
+```
+```{r}
 t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
-
-#mod <- lm(hhld_median_inc ~ line, data = group_income)
-#summary(mod)
-
-#summary(aov(hhld_median_inc ~ line, data = group_income))
 ```
 
 #### Two Sample t-test
 
-From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^-16$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
+From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
 ## How does race affect the accuracy of wearable devices?
 
