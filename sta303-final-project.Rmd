@@ -347,7 +347,7 @@ device_data %>%
        x = "Number of Reealsed products",
        caption = "Created by Mango in 2022") +
   theme_minimal()
-```
+``` 
 
 ```{r}
 # Batterty Lives

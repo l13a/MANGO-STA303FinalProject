@@ -1,0 +1,35 @@
+Line,name,value,n,total,percentage
+Active,Contactless payments,Yes,1,18,5.56
+Active,Heart rate sensor,Yes,2,18,11.110000000000001
+Active,Sleep tracking,Yes,1,18,5.56
+Active,Smart notifications,Yes,1,18,5.56
+Advance,Contactless payments,Yes,2,12,16.669999999999998
+Advance,GPS,Yes,2,12,16.669999999999998
+Advance,Heart rate sensor,Yes,2,12,16.669999999999998
+Advance,Sleep tracking,Yes,2,12,16.669999999999998
+Advance,Smart notifications,Yes,2,12,16.669999999999998
+Fit,Heart rate sensor,Yes,1,12,8.33
+Fit,Sleep tracking,Yes,1,12,8.33
+iDOL,Contactless payments,Yes,1,6,16.669999999999998
+iDOL,GPS,Yes,1,6,16.669999999999998
+iDOL,Heart rate sensor,Yes,1,6,16.669999999999998
+iDOL,Sleep tracking,Yes,1,6,16.669999999999998
+iDOL,Smart notifications,Yes,1,6,16.669999999999998
+Run,Contactless payments,Yes,6,54,11.110000000000001
+Run,GPS,Yes,8,54,14.81
+Run,Heart rate sensor,Yes,9,54,16.669999999999998
+Run,Pulse oximiter,Yes,4,54,7.41
+Run,Sleep tracking,Yes,6,54,11.110000000000001
+Run,Smart notifications,Yes,8,54,14.81
+Rush,Contactless payments,Yes,3,30,10
+Rush,GPS,Yes,4,30,13.33
+Rush,Heart rate sensor,Yes,5,30,16.669999999999998
+Rush,Pulse oximiter,Yes,3,30,10
+Rush,Sleep tracking,Yes,4,30,13.33
+Rush,Smart notifications,Yes,2,30,6.67
+Versus,Contactless payments,Yes,2,24,8.33
+Versus,GPS,Yes,3,24,12.5
+Versus,Heart rate sensor,Yes,4,24,16.669999999999998
+Versus,Pulse oximiter,Yes,2,24,8.33
+Versus,Sleep tracking,Yes,2,24,8.33
+Versus,Smart notifications,Yes,2,24,8.33

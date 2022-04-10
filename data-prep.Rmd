@@ -30,6 +30,7 @@ library(geojsonsf)
 library(eeptools)
 library(janitor)
 library(plyr)
+library(dplyr)
 ```
 
 # Loading client data
@@ -104,9 +105,20 @@ device_performance <- device_data %>%
   select(c(Line, `Heart rate sensor`, `Pulse oximiter`, GPS, `Sleep tracking`, `Smart notifications`, `Contactless payments`)) %>% 
   pivot_longer(-c(Line), names_to = "name", values_to = "value") %>% 
   group_by(Line, name, value) %>% 
-  summarise(n = n(  ))
+  dplyr::summarise(n = n())
 
-device_performance
+device_performance_total <- device_data %>%
+  select(c(Line, `Heart rate sensor`, `Pulse oximiter`, GPS, `Sleep tracking`, `Smart notifications`, `Contactless payments`)) %>% 
+  pivot_longer(-c(Line), names_to = "name", values_to = "value") %>% 
+  group_by(Line) %>% 
+  dplyr::summarise(total = n())
+
+device_performance <- device_performance %>% 
+  filter(value == "Yes")
+
+device_performance <- merge(device_performance, device_performance_total)
+device_performance$percentage <- round(device_performance$n / device_performance$total, 4) *100
+  
 write_csv(device_performance, file = "./data/device_performance.csv")
 ```
 
