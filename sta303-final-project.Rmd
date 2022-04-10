@@ -83,19 +83,14 @@ _Provide a brief introduction to your report and outline what the report will co
 - What are the main differences between different lines of the device?
 
 
-## How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
+## What is the demographic of different lines of product?
 
-_For each research question, you will want to briefly describe any data manipulation, show some exploratory plots/summary tables, report on any methods you use (i.e. models you fit) and the conclusions you draw from these_
+### Location of customers
+To create the plot that demonstrate the location of users in different production line, we combined the user dataset with web script Census Canada Postal Code Conversion dataset by postcode. We can therefore generate the province that the user belongs to by extracting the first two digit of CSDuid (Census subdivision unique identifier) from the Census dataset.
 
-
-
+In Figure 1, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
 ```{r}
 device_cust <-read.csv("./data/device_cust.csv")
-```
-
-```{r fig.cap="Age of customer by device line", include=T, echo=F}
-
-device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("Moonrise3"))
 ```
 
 ```{r}
@@ -110,14 +105,15 @@ device_cust <- merge(device_cust, canada_pro, by="province")
 province_data <- device_cust %>% group_by(province, line) %>% summarise(num = n(), province_name, latitude, longtitude) %>% unique()
 
 province_data_active <- province_data[province_data$line == "Active",]
+
 province_data_advance <- province_data[province_data$line == "Advance",]
 province_data_run <- province_data[province_data$line == "Run",]
 province_data_idol <- province_data[province_data$line == "iDOL",]
 ```
 
 ```{r include=F}
-# province_data_active %>% 
-#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
+ province_data %>% 
+   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
 # 
 # province_data_advance %>%
 #   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
@@ -131,21 +127,50 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 ```
 
 ![Customer location by device line](./data/province_line.png)
-```{r}
-device_cust$sex_binary <-  as.factor(ifelse(device_cust$sex == "Female", 0,
-                        ifelse(device_cust$sex == "Male", 1, NaN)))
-mod <- glm(sex_binary ~ line, 
-  family=binomial(link='logit'), data=device_cust, na.action =  na.exclude)
+
+### Age of customers
+
+To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot below, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line.
+
+```{r fig.cap="Age of customer by device line", include=T, echo=F}
+
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))
 ```
 
+We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, `line`.
+
+#### Assumption Checking
+
+- It satisfies the assumptions that there are two or more levels in the independent variable `line`, the dependent variable,`age`, is on a ratio scale and the observations are independent.
+
+- The fourth assumption is that all groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
+
+#### Kruskal Wallis Test
+
+After running the Kruskal Wallis Test, we get a p-value of $5.206^{-13}$. It is smaller than the significant level of 0.05, thus we can conclude that the customers in the four lines do not have the same median age.
+
 ```{r}
-device_cust$age_range <-  as.factor(ifelse(device_cust$age <= 12, "children",
-                        ifelse(device_cust$age <= 18, "teenager",
-                        ifelse(device_cust$age <= 59, "adult","senior adult"))))
-kruskal.test(age_range ~ line, data = device_cust)
+kruskal.test(age ~ line, data = device_cust)
 ```
 
+### Gender of customers
 
+From the bar plot below, we can notice that there are more female customers in all four lines. To test whether the customers gender in new and traditional lines are different. We created a new variable `sex_binary` which have a value 1 for female and 0 for other genders and a new variable `line_binary` which have a value `new` for active and advance line, and `old` for other lines.
+
+```{r fig.cap="Sex of customer by device line", include=T, echo=F}
+
+device_cust %>% ggplot(aes(x = sex, fill=line)) + geom_bar() +  facet_wrap("line") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))
+```
+
+#### Two Sample t-test
+
+We conducted a two sample t-test on it. The mean in group `new` and group `old` is 0.578 and 0.586 respectively. Which indicates that there are approximatly 58% customers that are female in all lines. Since the p-value is 0.2598, we do not reject the hypothesis that the difference in mean gender equal to 0 between two groups of lines. The result indicates that the gender of customers do not very for old and new lines.
+
+```{r}
+device_cust$sex_binary <-  ifelse(device_cust$sex == "Female", 1, 0)
+device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
+t.test(sex_binary~ line_binary, data = device_cust, var.equal = TRUE)
+```
 
 
 ```{r}
