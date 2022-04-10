@@ -1,5 +1,5 @@
 ---
-title: "Report title"
+title: "Report Title"
 subtitle: "Subtitle that indicates findings"
 author: "Report prepared for MINGAR by [MANGO]"
 date: 2022-04-07
@@ -315,6 +315,8 @@ lmtest::lrtest(race1, race2)
 
 Likelihood Ratio Test shows that we have significant evidence (p value = 5.49e-07) against the fact that the simpler model explains the data just as well as the complex model. Hence, we prefer race2 over race1. From race2, INTERPRET THE MODEL HEREEE
 
+\newpage
+
 ## What are the main differences between different lines of the device?
 
 In this research question, we are interested in the differences of the **performance/price** among the different lines of services, combined with the different demographic of the users between lines, we can give a report summary/advice for what has changed and how the change affects the target audience.
@@ -327,7 +329,7 @@ device_cust <- read.csv("./data/device_cust.csv")
 device_performance <- read.csv("./data/device_performance.csv")
 ```
 
-```{r}
+```{r echo=FALSE, include=TRUE}
 # Other performance
 library(ggpubr)
 ggballoonplot(device_performance, 
@@ -413,7 +415,7 @@ p4<-device_cust %>%
        caption = "Created by Mango in 2022")
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=TRUE}
 ggarrange(p1, p2, p3, p4,
           labels = c("A", "B", "C", "D"),
           common.legend = TRUE, 
@@ -428,6 +430,10 @@ ggarrange(p1, p2, p3, p4,
 **Plot C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resisrant, which is the lowest level of waterproof.
 
 **Plot D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
+
+### Conclusion for Research Question 3
+
+Above all, we noticed that the line *Run* and *Advanced* are the most popular lines at *Mingar.* Line *Run* has an overall better performance and a higher price among all other lines. Run is one of the earliest lines the company started producing, thus, line *Run* has 9 devices, which is the line having most products. Line *Active* and *Advanced* are two new lines that came out in the most recent 3 years. There are only 5 devices for the line *Advanced* and *Active.* However, the total sales of line *Advanced* and *Active* is more than that of line *Run.* The result implies that when the devices with sufficient functionality, price is the major factor for number of sales.
 
 ## Discussion
 
