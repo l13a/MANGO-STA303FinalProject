@@ -82,7 +82,7 @@ _Provide a brief introduction to your report and outline what the report will co
 - What are the main differences between different lines of the device?
 
 
-## Informative title for section addressing a research question
+## How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
 
 _For each research question, you will want to briefly describe any data manipulation, show some exploratory plots/summary tables, report on any methods you use (i.e. models you fit) and the conclusions you draw from these_
 
@@ -93,7 +93,8 @@ device_cust <-read.csv("./data/device_cust.csv")
 ```
 
 ```{r fig.cap="Age of customer by device line", include=T, echo=F}
-device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2"))
+
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("Moonrise3"))
 ```
 
 ```{r}
@@ -129,6 +130,33 @@ province_data_idol %>%
 ```
 
 ![Customer location by device line](./data/province_line.png)
+```{r}
+device_cust$sex_binary <-  as.factor(ifelse(device_cust$sex == "Female", 0,
+                        ifelse(device_cust$sex == "Male", 1, NaN)))
+mod <- glm(sex_binary ~ line, 
+  family=binomial(link='logit'), data=device_cust, na.action =  na.exclude)
+```
+
+```{r}
+device_cust$age_range <-  as.factor(ifelse(device_cust$age <= 12, "children",
+                        ifelse(device_cust$age <= 18, "teenager",
+                        ifelse(device_cust$age <= 59, "adult","senior adult"))))
+kruskal.test(age_range ~ line, data = device_cust)
+```
+
+
+
+
+```{r}
+income <-  read.csv("./data/median_income.csv")
+group_income <- inner_join(device_cust, income) %>% select(c("line", "hhld_median_inc"))
+
+group_income %>% ggplot(aes(x= hhld_median_inc)) + geom_histogram() + facet_wrap("line")
+mod <- lm(hhld_median_inc ~ line, data = group_income)
+summary(mod)
+
+summary(aov(hhld_median_inc ~ line, data = group_income))
+```
 
 
 
@@ -140,13 +168,128 @@ skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
 
 race_sleep_data <- race_sleep_data %>%
   mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
+```
 
+
+```{r}
+# total number of individuals for each race
 race_sleep_data %>% ggplot(aes(skin_tone, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
 
+race_sleep_data %>% group_by(skin_tone) %>% summarise(count = n())
+```
+
+
+```{r}
+# distribution of number of flags for each race 
 race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_linedraw()
+```
+
+
+```{r}
+# number of individuals using each line for each race by sex
+race_sleep_data %>% ggplot(aes(line, fill = skin_tone)) + facet_wrap("sex") + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal()
+
+# race_sleep_data %>% ggplot(aes(sex, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal()
+```
+
+```{r}
+# number of flags for whether there is a pulse oximiter, coloured by skin tone
+race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("pulse_oximiter") + theme_linedraw()
+```
+
+```{r}
+# number of flags for each battery_life, coloured by skin tone
+race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("battery_life") + theme_linedraw()
 
 ```
 
+```{r}
+# number of flags for each water resistence type, coloured by skin tone
+race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("water_resitance") + theme_linedraw()
+```
+
+```{r}
+# number of flags v.s. duration, coloured by skin tone
+race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_linedraw()
+
+```
+```{r}
+race_sleep_data %>% ggplot(aes(x = cust_id, y = flags)) + geom_point() + theme_linedraw()
+```
+
+```{r}
+temp_race_sleep_data <- race_sleep_data %>% group_by(cust_id) %>% mutate(mean = mean(flags)) %>% mutate(var = var(flags))
+
+temp_race_sleep_data %>% ggplot(aes(x = mean, y = var, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_linedraw()
+
+```
+
+
+Observations: 
+- more light skinned individuals than dark skinned individuals
+
+- darker skinned individuals seem to have a larger spread and larger mean of number of flags than compared to lighter skinned individuals
+
+- more females than males wearing devices (might need to do this in a different dataset)
+- most individuals wear the Advance or Run line
+
+- battery life, water resistance, and whether or not there is a pulse oximiter seem to not affect the number of flags
+
+- not much relationship between duration of sleep and number of flags
+
+
+### Model Assumption Checks
+1. Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population.
+
+2. Random Effects come from a normal distribution ????
+
+3. Random Effect errors have constant variance
+```{r}
+  
+temp_race_sleep_data <- race_sleep_data %>% 
+  filter(!(flags == 0)) %>% 
+  group_by(skin_tone) %>% 
+  summarise(var_of_log_flags = var(log(flags)))
+
+temp_race_sleep_data
+```
+We see that the variance of the number of flags transformed by the link function (log) is homogeneous across skin tones. This suggests that the homoscedasiticy of random effect errors assumption is satisfied
+
+4. Poisson link function is appropriate:
+
+```{r}
+# check distribution of response variable
+race_sleep_data %>% ggplot(aes(flags, fill = skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
+```
+From the plot, we see that the number of flags (response variable) is ranges from 0 to over 20, is right skewed, and can be modeled by Poisson distribution. 
+
+```{r}
+# check mean and variance of number of flags for each skin tone (main effect)
+race_sleep_data %>% group_by(skin_tone) %>% summarize(mean = mean(flags), var = var(flags), n= n())
+```
+We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case. 
+
+Check that log(response) is a linear function of the predictor???
+
+### GLMM Model Fitting
+```{r}
+race_sleep_data <- race_sleep_data %>% filter(!is.na(sex))
+
+race1<- lme4::glmer(flags ~ skin_tone + (1 | cust_id), 
+        family='poisson', data=race_sleep_data)
+summary(race1)
+
+race2<- lme4::glmer(flags ~ skin_tone + sex + (1 | cust_id), 
+        family='poisson', data=race_sleep_data)
+summary(race2)
+
+# race3<- glm(flags ~ skin_tone + sex + line, 
+#        family='poisson', data=race_sleep_data)
+# summary(race3)
+
+lmtest::lrtest(race1, race2)
+```
+Likelihood Ratio Test shows that we have significant evidence (p value = 5.49e-07) against the fact that the simpler model explains the data just as well as the complex model. Hence, we prefer race2 over race1. From race2, INTERPRET THE MODEL HEREEE
 
 ```{r}
 income <-  read.csv("./data/median_income.csv")
