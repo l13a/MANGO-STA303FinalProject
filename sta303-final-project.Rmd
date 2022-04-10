@@ -17,7 +17,7 @@ titlepage-rule-color: "FFFFFF"
 titlepage-rule-height: 2
 ---
 
-```{r, message = FALSE, echo=FALSE}
+```{r, message = FALSE, echo=FALSE, warning = FALSE}
 library(tidyverse)
 library(lme4)
 library(rvest)
@@ -32,6 +32,7 @@ library(mapdata)
 library(leaflet)
 library(plotly)
 library(RColorBrewer)
+library(ggpubr)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -79,7 +80,7 @@ knitr::opts_chunk$set(include=FALSE)
 
 -   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
 
--   Are the devices "racist"?
+-   How does skin color (identified by individual's emoji modifiers) affect the number of quality flags that MINGAR devices report during a sleep tracking session?
 
 -   What are the main differences between different lines of the device?
 
@@ -188,7 +189,11 @@ t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 
 From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
-## How does race affect the accuracy of wearable devices?
+## How does skin color affect the accuracy of wearable devices?
+### Data Manipulation
+The dataset "race_sleep_data" is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. The newly added variable "skin_tone" divides the users to different skin tone categories depending on their selected emoji modifier.
+
+### Exploratory Plots
 
 ```{r}
 race_sleep_data <- read.csv("./data/race_sleep_data.csv")
@@ -196,152 +201,109 @@ skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
 
 race_sleep_data <- race_sleep_data %>%
   mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
-```
 
-```{r}
-# total number of individuals for each race
-race_sleep_data %>% ggplot(aes(skin_tone, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
-
-race_sleep_data %>% group_by(skin_tone) %>% summarise(count = n())
+race_sleep_data$sex <- ifelse(is.na(race_sleep_data$sex), "Not Answered", race_sleep_data$sex)
 ```
 
 ```{r}
 # distribution of number of flags for each race 
-race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_linedraw()
-```
+race_fig_1 <- race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
+  labs(title = "Distribution of Flags for each Skin Tone",
+       x = "Number of Flags",
+       y = "Count") + theme(legend.position="none") + theme(text = element_text(size = 6))
 
-```{r}
+
 # number of individuals using each line for each race by sex
-race_sleep_data %>% ggplot(aes(line, fill = skin_tone)) + facet_wrap("sex") + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal()
 
-# race_sleep_data %>% ggplot(aes(sex, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal()
-```
+race_fig_2 <- race_sleep_data %>% ggplot(aes(line, fill = skin_tone)) + facet_wrap("sex") + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal() +
+  labs(title = "Num of Users using each Line, sort by Sex and Skin Tone", 
+       x = "Line",
+       y = "Number of Users") + theme(legend.position="none") + theme(text = element_text(size = 6))
 
-```{r}
-# number of flags for whether there is a pulse oximiter, coloured by skin tone
-race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("pulse_oximiter") + theme_linedraw()
-```
-
-```{r}
-# number of flags for each battery_life, coloured by skin tone
-race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("battery_life") + theme_linedraw()
-
-```
-
-```{r}
-# number of flags for each water resistence type, coloured by skin tone
-race_sleep_data %>% ggplot(aes(x = flags, fill = skin_tone)) + scale_fill_manual(values = skin_tone_palette)+ geom_histogram(bins = 30) + facet_wrap("water_resitance") + theme_linedraw()
-```
-
-```{r}
 # number of flags v.s. duration, coloured by skin tone
-race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_linedraw()
-
+race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_minimal() + 
+  labs(title = "Sleep Duration v.s. Number of Flags, coloured by Skin Tone", 
+       x = "Sleep Duration",
+       y = "Number of Flags") + theme(legend.position="none") + theme(text = element_text(size = 6))
 ```
 
-```{r}
-race_sleep_data %>% ggplot(aes(x = cust_id, y = flags)) + geom_point() + theme_linedraw()
+```{r, include = TRUE, echo = FALSE}
+ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
 ```
 
-```{r}
-temp_race_sleep_data <- race_sleep_data %>% group_by(cust_id) %>% mutate(mean = mean(flags)) %>% mutate(var = var(flags))
+Figure A shows that there are more light skinned users than dark skinned users and there are more females than males and intersex users. Most users use the Advance or Run lines.
 
-temp_race_sleep_data %>% ggplot(aes(x = mean, y = var, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_linedraw()
+Figure B shows that darker skinned users seem to have a larger spread and larger mean of number of flags than compared to lighter skinned users, suggesting some evidence of a performance bias.
 
-```
+Figure C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
-Observations: - more light skinned individuals than dark skinned individuals
-
--   darker skinned individuals seem to have a larger spread and larger mean of number of flags than compared to lighter skinned individuals
-
--   more females than males wearing devices (might need to do this in a different dataset)
-
--   most individuals wear the Advance or Run line
-
--   battery life, water resistance, and whether or not there is a pulse oximiter seem to not affect the number of flags
-
--   not much relationship between duration of sleep and number of flags
-
+## Fitting a GLMM with Poisson Link Function
 ### Model Assumption Checks
-
-1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population.
-
-2.  Random Effects come from a normal distribution ????
-
-3.  Random Effect errors have constant variance
-
-```{r}
-  
+1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population
+2.  Random Effects (each individual) come from a normal distribution
+3.  Random Effect errors have constant variance: 
+```{r, include = TRUE, echo = FALSE, message=FALSE}
 temp_race_sleep_data <- race_sleep_data %>% 
   filter(!(flags == 0)) %>% 
-  group_by(skin_tone) %>% 
-  summarise(var_of_log_flags = var(log(flags)))
+  group_by(cust_id) %>% 
+  summarise("var" = var(log(flags)), "skin_tone" = skin_tone)
 
-temp_race_sleep_data
+
+temp_race_sleep_data <- data.frame(temp_race_sleep_data)
+
+temp_race_sleep_data %>% ggplot(aes(y = var)) + geom_boxplot() + scale_colour_manual(values = skin_tone_palette) + theme_minimal() + 
+  labs(title = "Spread of the Variance of Log(# of flags) for each individual",
+       y = "Var(Log(# of flags))") + theme(legend.position="none")
 ```
-
-We see that the variance of the number of flags transformed by the link function (log) is homogeneous across skin tones. This suggests that the homoscedasiticy of random effect errors assumption is satisfied
+We see that the variance of the number of flags transformed by the link function (log) is mostly the same with little spread across individuals. This suggests that the homoscedasiticy of random effect errors assumption is satisfied.
 
 4.  Poisson link function is appropriate:
 
-```{r}
-# check distribution of response variable
-race_sleep_data %>% ggplot(aes(flags, fill = skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
-```
+From the Figure B above, we see that the number of flags (response variable) ranges from 0 to over 20, is right skewed, and can be modeled by Poisson distribution. We also check if the mean and variance of number of flags is equal for each skin tone:
 
-From the plot, we see that the number of flags (response variable) is ranges from 0 to over 20, is right skewed, and can be modeled by Poisson distribution.
-
-```{r}
+```{r, include = TRUE, echo=FALSE}
 # check mean and variance of number of flags for each skin tone (main effect)
-race_sleep_data %>% group_by(skin_tone) %>% dplyr::summarize(mean = mean(flags), var = var(flags), n= n())
-```
+mean_var_check <- race_sleep_data %>% group_by(skin_tone) %>% summarise(mean = mean(flags), var = var(flags), number= n())
 
+mean_var_check <- data.frame(mean_var_check)
+
+knitr::kable(mean_var_check, align = 'c', col.names = c("Skin Tone  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"))
+```
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
 
-Check that log(response) is a linear function of the predictor???
+### Model Fitting
 
-### GLMM Model Fitting
+$$\begin{aligned}Y_{irs} &\thicksim Poisson(\lambda_{irs})\\
+\log(\lambda_{irs}) &= \beta_0 + X_{irs}\beta + U_{i}\\
+U_i &\thicksim N(0, \sigma ^2) 
+\end{aligned}$$
+
+
+- $Y_{irs}$ is the number of flags for individual $i$ with skin tone $r$ and sex $s$
+- $X_{irs}$ has indicator variables for skin tone and sex
+- $U_i$ is the individual level random effect
 
 ```{r}
-race_sleep_data <- race_sleep_data %>% filter(!is.na(sex))
 
 race1<- lme4::glmer(flags ~ skin_tone + (1 | cust_id), 
         family='poisson', data=race_sleep_data)
-summary(race1)
+#summary(race1)
 
 race2<- lme4::glmer(flags ~ skin_tone + sex + (1 | cust_id), 
         family='poisson', data=race_sleep_data)
-summary(race2)
 
-# race3<- glm(flags ~ skin_tone + sex + line, 
-#        family='poisson', data=race_sleep_data)
-# summary(race3)
-
-lmtest::lrtest(race1, race2)
 ```
 
-Likelihood Ratio Test shows that we have significant evidence (p value = 5.49e-07) against the fact that the simpler model explains the data just as well as the complex model. Hence, we prefer race2 over race1. From race2, INTERPRET THE MODEL HEREEE
+```{r, cache = TRUE, message=FALSE, include = TRUE, echo = FALSE}
+ci <- confint(race2,parm="beta_",method="Wald")
+expect_conf <- exp(ci)
 
-```{r}
-income <-  read.csv("./data/median_income.csv")
-group_income <- inner_join(device_cust, income) %>% select(c("line", "hhld_median_inc"))
+expect_conf <- data.frame(expect_conf)
 
-group_income %>% 
-  ggplot(aes(x= hhld_median_inc)) + 
-  geom_histogram(bins = 30) + 
-  facet_wrap("line")+
-  labs(title = "Median Income vs Count by Lines", 
-       x = "Median Income",
-       y = "Count",
-       caption = "Created by Mango in 2022")
+knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"))
 
-kruskal.test(hhld_median_inc ~ line, data = group_income)
-
-mod <- lm(hhld_median_inc ~ line, data = group_income)
-summary(mod)
-# 
-# summary(aov(hhld_median_inc ~ line, data = group_income))
 ```
+From the model, we see that the general trend is the darker one is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light skin tone, we are 95% confident that, compared to light skinned users, the mean number of flags for a user with the dark skin tone changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of skin tone predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of skin tones. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users. 
 
 ## What are the main differences between different lines of the device?
 
