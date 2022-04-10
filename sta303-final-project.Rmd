@@ -321,7 +321,12 @@ Likelihood Ratio Test shows that we have significant evidence (p value = 5.49e-0
 
 In this research question, we are interested in the differences of the **performance/price** among the different lines of services, combined with the different demographic of the users between lines, we can give a report summary/advice for what has changed and how the change affects the target audience.
 
+### Data Manipulation
+
 We used three database in this part. The first one is ***device_data***, which is retrieved by web scraping from the fitness tracker info hub. This database includes all the information on the devices produced by the company *Mingar* and *Bitfit.* The second database is ***device_cust*** including the data for individuals who bought the devices from *Mingar.* This database is obtained by merging the database *cust_dev* and *customer*. The third database used in this question is ***data_performance,*** which includes the percentage of the devices having some functionality in each line***.*** This dataset is built by group the *device_data* by line and functionality. More details about the code of data waggling is in the *data_prep.Rmd* file.
+
+### 
+Exploratory plots
 
 ```{r}
 device_data <- read.csv("./data/device_data.csv")
@@ -355,7 +360,7 @@ p1 <- device_data %>%
   theme_minimal()
 ```
 
-```{r include=FALSE}
+```{r eval=FALSE, include=FALSE}
 mingar <-  device_data %>% 
               na.omit() %>% 
               filter(brand == "Mingar") %>% 
@@ -431,7 +436,7 @@ ggarrange(p1, p2, p3, p4,
 
 **Plot D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
 
-### Conclusion for Research Question 3
+### Conclusions
 
 Above all, we noticed that the line *Run* and *Advanced* are the most popular lines at *Mingar.* Line *Run* has an overall better performance and a higher price among all other lines. Run is one of the earliest lines the company started producing, thus, line *Run* has 9 devices, which is the line having most products. Line *Active* and *Advanced* are two new lines that came out in the most recent 3 years. There are only 5 devices for the line *Advanced* and *Active.* However, the total sales of line *Advanced* and *Active* is more than that of line *Run.* The result implies that when the devices with sufficient functionality, price is the major factor for number of sales.
 
