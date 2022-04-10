@@ -29,6 +29,7 @@ library(sf)
 library(geojsonsf)
 library(eeptools)
 library(janitor)
+library(plyr)
 ```
 
 # Loading client data
@@ -168,6 +169,7 @@ device_cust <-device_cust_id %>% full_join(customer, by = "cust_id")
 device_cust$dob <- as.Date(device_cust$dob)
 device_cust$age <- floor(age_calc(device_cust$dob, units = "years"))
 
+device_cust <- unique(inner_join(device_cust, postcode, by="postcode") )
 
 
 #write_csv(device_cust_id, file = "./data/device_cust_id.csv")
@@ -185,13 +187,18 @@ race_sleep_data <- customer %>%
   filter(!is.na(flags)) %>%
   filter(!is.na(emoji_modifier))
 
+race_sleep_data$skin_tone <- as.factor(
+ifelse(race_sleep_data$emoji_modifier == "U+1F3FB","light", 
+ifelse(race_sleep_data$emoji_modifier == "U+1F3FC", "medium_light", ifelse(race_sleep_data$emoji_modifier == "U+1F3FD", "medium", ifelse(race_sleep_data$emoji_modifier == "U+1F3FE", "medium_dark",                             "dark")))))
+
 race_sleep_data <- race_sleep_data %>% left_join(cust_dev, by = "cust_id") 
 
-race_sleep_data <- race_sleep_data %>% left_join(device, by = "dev_id") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "dev_id", "device_name")
+race_sleep_data <- race_sleep_data %>% left_join(device, by = "dev_id") %>% select("cust_id", "sex", "skin_tone", "date", "duration", "flags", "dev_id", "device_name")
 
 device_data <- device_data %>% janitor::clean_names() 
 
-race_sleep_data <- race_sleep_data %>% left_join(device_data, by = "device_name") %>% select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags", "device_name", "line", "battery_life", "water_resitance", "heart_rate_sensor", "pulse_oximiter", "gps", "sleep_tracking", "smart_notifications")
+race_sleep_data <- race_sleep_data %>% left_join(device_data, by = "device_name") %>% select("cust_id", "sex", "skin_tone", "date", "duration", "flags", "device_name", "line", "battery_life", "water_resitance", "heart_rate_sensor", "pulse_oximiter", "gps", "sleep_tracking", "smart_notifications")
+
 
 #put in data folder
 write_csv(race_sleep_data, file = "data/race_sleep_data.csv")

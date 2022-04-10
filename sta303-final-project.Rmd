@@ -9,6 +9,7 @@ output:
     template: report.tex
     toc: true
     toc_depth: 2
+  always_allow_html: yes
 titlepage: true
 titlepage-color: "6C3082"
 titlepage-text-color: "FFFFFF"
@@ -25,6 +26,11 @@ library(lmtest)
 library(wesanderson)
 library(ggplot2)
 library(gplots)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(leaflet)
+library(plotly)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -86,15 +92,82 @@ _For each research question, you will want to briefly describe any data manipula
 device_cust <-read.csv("./data/device_cust.csv")
 ```
 
+```{r fig.cap="Age of customer by device line", include=T, echo=F}
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2"))
+```
+
 ```{r}
-device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2")) 
+province <- c(10, 11, 12, 13, 24, 35, 46, 47, 48, 59, 60, 61, 62)
+province_name <- c("Newfoundland and Labrador", "Prince Edward Island","Nova Scotia", "New Brunswick", "Quebec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "British Columbia", "Yukon", "Northwest Territories", "Nunavut")
+latitude <- c(53.5, 46, 45, 46.498390, 53, 50, 56.415211, 55, 55, 53.726669, 64, 62.135189, 70.453262)
+longtitude <- c(-60, -63, -63, -66.159668, -70, -85,-98.739075, -106, -115, -127.647621, -135, -122.792473, -86.798981)
+canada_pro<- data.frame(province = province, province_name = province_name, latitude=latitude,longtitude= longtitude)
+
+device_cust$province <- substr(device_cust$CSDuid,1,2)
+device_cust <- merge(device_cust, canada_pro, by="province")
+province_data <- device_cust %>% group_by(province, line) %>% summarise(num = n(), province_name, latitude, longtitude) %>% unique()
+
+province_data_active <- province_data[province_data$line == "Active",]
+province_data_advance <- province_data[province_data$line == "Advance",]
+province_data_run <- province_data[province_data$line == "Run",]
+province_data_idol <- province_data[province_data$line == "iDOL",]
+```
+
+```{r include=F}
+province_data_active %>% 
+  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
+
+province_data_advance %>%
+  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
+
+province_data_run %>% 
+  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="Run")
+
+province_data_idol %>%
+  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="iDOL")
+
+```
+
+![Customer location by device line](./data/province_line.png)
+
+
+
+## How does race affect the accuracy of wearable devices?
+
+```{r}
+race_sleep_data <- read.csv("./data/race_sleep_data.csv")
+skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
+
+race_sleep_data <- race_sleep_data %>%
+  mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
+
+race_sleep_data %>% ggplot(aes(skin_tone, fill = skin_tone)) + geom_bar() + scale_fill_manual(values = skin_tone_palette) +theme_minimal()
+
+race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_linedraw()
+
 ```
 
 
+```{r}
+income <-  read.csv("./data/median_income.csv")
+group_income <- inner_join(device_cust, income) %>% select(c("line", "hhld_median_inc"))
 
+group_income %>% 
+  ggplot(aes(x= hhld_median_inc)) + 
+  geom_histogram(bins = 30) + 
+  facet_wrap("line")+
+  labs(title = "Median Income vs Count by Lines", 
+       x = "Median Income",
+       y = "Count",
+       caption = "Created by Mango in 2022")
 
+kruskal.test(hhld_median_inc ~ line, data = group_income)
 
-## Informative title for section addressing a research question
+mod <- lm(hhld_median_inc ~ line, data = group_income)
+summary(mod)
+# 
+# summary(aov(hhld_median_inc ~ line, data = group_income))
+```
 
 
 ## What are the main differences between different lines of the device?
@@ -111,9 +184,9 @@ device_cust <- read.csv("./data/device_cust.csv")
 ```{r}
 library(RColorBrewer)
 device_data %>% 
-  ggplot(aes(x = Released, y = `Recommended.retail.price`, color = Line, shape = Brand)) +
+  ggplot(aes(x = Released, y = `Recommended retail price`, color = Line, shape = Brand)) +
   geom_point(size = 4) +
-  scale_color_brewer(palette="Spectral") +
+  scale_color_brewer(palette="Set3") +
   labs(title = "Recommeded Retail price vs Released Date", 
        x = "Released Date",
        y = "Recommended Retail Price",
@@ -124,8 +197,8 @@ device_data %>%
 device_data %>% 
   ggplot(aes(y = ReleasedYr, color = Line, fill = Line)) +
   geom_bar(stat="count") +
-  scale_color_brewer(palette="Spectral") +
-  scale_fill_brewer(palette="Spectral") +
+  scale_color_brewer(palette="Set3") +
+  scale_fill_brewer(palette="Set3") +
   labs(title = "Number of realesed products vs Released Year", 
        y = "Released Year",
        x = "Number of Reealsed products",
@@ -136,10 +209,10 @@ device_data %>%
 ```{r}
 # Batterty Lives
 device_data %>% 
-  ggplot(aes(y = `Battery.life`, color = Line, fill = Line)) +
+  ggplot(aes(y = `Battery life`, color = Line, fill = Line)) +
   geom_bar(stat="count") +
-  scale_color_brewer(palette="Spectral") +
-  scale_fill_brewer(palette="Spectral") +
+  scale_color_brewer(palette="Set3") +
+  scale_fill_brewer(palette="Set3") +
   labs(title = "Number of realesed products vs Batttery Life", 
        x = "Released Year",
        y = "Battery Life",
@@ -150,27 +223,30 @@ device_data %>%
 ```{r}
 # Waterproof
 device_data %>% 
-  ggplot(aes(y = `Water.resitance`, color = Line, fill = Line)) +
+  ggplot(aes(y = `Water resitance`, color = Line, fill = Line)) +
   geom_bar(stat="count") +
-  scale_color_brewer(palette="Spectral") +
-  scale_fill_brewer(palette="Spectral") +
-  labs(title = "Number of realesed products vs Batttery Life", 
+  scale_color_brewer(palette="Set3") +
+  scale_fill_brewer(palette="Set3") +
+  labs(title = "Number of realesed products vs Waterproof", 
        x = "Released Year",
        y = "Battery Life",
        caption = "Created by Mango in 2022") +
   theme_minimal()
 ```
+
 ```{r}
 # Other performance
 library(ggpubr)
 ggballoonplot(device_performance, 
               x="Line", 
               y="name", 
-              size = "n", 
-              fill = "n",
-              facet.by = "value") +
-  scale_fill_viridis_c(option = "C")
+              size = "percentage", 
+              fill = "percentage",
+              color = "percentage") +
+  scale_fill_viridis_c(option = "E") +
+  scale_color_viridis_c(option = "E")
 ```
+
 ```{r}
 device_cust %>% 
   ggplot(aes(y=line))+
