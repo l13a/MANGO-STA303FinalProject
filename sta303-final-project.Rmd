@@ -80,7 +80,7 @@ _Provide a brief introduction to your report and outline what the report will co
 - What are the main differences between different lines of the device?
 
 
-## Informative title for section addressing a research question
+## How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
 
 _For each research question, you will want to briefly describe any data manipulation, show some exploratory plots/summary tables, report on any methods you use (i.e. models you fit) and the conclusions you draw from these_
 
@@ -91,7 +91,8 @@ device_cust <-read.csv("./data/device_cust.csv")
 ```
 
 ```{r fig.cap="Age of customer by device line", include=T, echo=F}
-device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("GrandBudapest2"))
+
+device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_linedraw() + scale_fill_manual(values = wes_palette("Moonrise3"))
 ```
 
 ```{r}
@@ -127,6 +128,33 @@ province_data_idol %>%
 ```
 
 ![Customer location by device line](./data/province_line.png)
+```{r}
+device_cust$sex_binary <-  as.factor(ifelse(device_cust$sex == "Female", 0,
+                        ifelse(device_cust$sex == "Male", 1, NaN)))
+mod <- glm(sex_binary ~ line, 
+  family=binomial(link='logit'), data=device_cust, na.action =  na.exclude)
+```
+
+```{r}
+device_cust$age_range <-  as.factor(ifelse(device_cust$age <= 12, "children",
+                        ifelse(device_cust$age <= 18, "teenager",
+                        ifelse(device_cust$age <= 59, "adult","senior adult"))))
+kruskal.test(age_range ~ line, data = device_cust)
+```
+
+
+
+
+```{r}
+income <-  read.csv("./data/median_income.csv")
+group_income <- inner_join(device_cust, income) %>% select(c("line", "hhld_median_inc"))
+
+group_income %>% ggplot(aes(x= hhld_median_inc)) + geom_histogram() + facet_wrap("line")
+mod <- lm(hhld_median_inc ~ line, data = group_income)
+summary(mod)
+
+summary(aov(hhld_median_inc ~ line, data = group_income))
+```
 
 
 
