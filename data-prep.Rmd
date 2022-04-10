@@ -98,19 +98,20 @@ device_data$GPS <- as.factor(device_data$GPS)
 device_data$`Sleep tracking` <- as.factor(device_data$`Sleep tracking`)
 device_data$`Smart notifications` <- as.factor(device_data$`Smart notifications`)
 device_data$`Contactless payments` <- as.factor(device_data$`Contactless payments`)
+device_data <- device_data %>% janitor::clean_names()
 
 write_csv(device_data, file = "./data/device_data.csv")
 
 device_performance <- device_data %>% 
-  select(c(Line, `Heart rate sensor`, `Pulse oximiter`, GPS, `Sleep tracking`, `Smart notifications`, `Contactless payments`)) %>% 
-  pivot_longer(-c(Line), names_to = "name", values_to = "value") %>% 
-  group_by(Line, name, value) %>% 
+  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, smart_notifications, contactless_payments)) %>% 
+  pivot_longer(-c(line), names_to = "name", values_to = "value") %>% 
+  group_by(line, name, value) %>% 
   dplyr::summarise(n = n())
 
 device_performance_total <- device_data %>%
-  select(c(Line, `Heart rate sensor`, `Pulse oximiter`, GPS, `Sleep tracking`, `Smart notifications`, `Contactless payments`)) %>% 
-  pivot_longer(-c(Line), names_to = "name", values_to = "value") %>% 
-  group_by(Line) %>% 
+  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, smart_notifications, contactless_payments)) %>% 
+  pivot_longer(-c(line), names_to = "name", values_to = "value") %>% 
+  group_by(line) %>% 
   dplyr::summarise(total = n())
 
 device_performance <- device_performance %>% 

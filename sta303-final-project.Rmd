@@ -9,7 +9,7 @@ output:
     template: report.tex
     toc: true
     toc_depth: 2
-  always_allow_html: yes
+    
 titlepage: true
 titlepage-color: "6C3082"
 titlepage-text-color: "FFFFFF"
@@ -31,6 +31,7 @@ library(maps)
 library(mapdata)
 library(leaflet)
 library(plotly)
+library(RColorBrewer)
 
 # this should suppress all code and messages
 knitr::opts_chunk$set(include=FALSE)
@@ -115,17 +116,17 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 ```
 
 ```{r include=F}
-province_data_active %>% 
-  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
-
-province_data_advance %>%
-  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
-
-province_data_run %>% 
-  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="Run")
-
-province_data_idol %>%
-  plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="iDOL")
+# province_data_active %>% 
+#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
+# 
+# province_data_advance %>%
+#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
+# 
+# province_data_run %>% 
+#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="Run")
+# 
+# province_data_idol %>%
+#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="iDOL")
 
 ```
 
@@ -265,7 +266,7 @@ From the plot, we see that the number of flags (response variable) is ranges fro
 
 ```{r}
 # check mean and variance of number of flags for each skin tone (main effect)
-race_sleep_data %>% group_by(skin_tone) %>% summarize(mean = mean(flags), var = var(flags), n= n())
+race_sleep_data %>% group_by(skin_tone) %>% dplyr::summarize(mean = mean(flags), var = var(flags), n= n())
 ```
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case. 
 
@@ -321,16 +322,16 @@ summary(mod)
 ```{r}
 device_data <- read.csv("./data/device_data.csv")
 device_cust <- read.csv("./data/device_cust.csv")
+device_performance <- read.csv("./data/device_performance.csv")
 ```
 
 
 ```{r}
-library(RColorBrewer)
-device_data %>% 
-  ggplot(aes(x = Released, y = `Recommended retail price`, color = Line, shape = Brand)) +
+device_data %>%
+  ggplot(aes(x = released_yr, y = recommended_retail_price, color = line, shape = brand)) +
   geom_point(size = 4) +
   scale_color_brewer(palette="Set3") +
-  labs(title = "Recommeded Retail price vs Released Date", 
+  labs(title = "Recommeded Retail price vs Released Date",
        x = "Released Date",
        y = "Recommended Retail Price",
        caption = "Created by Mango in 2022")
@@ -338,7 +339,7 @@ device_data %>%
 
 ```{r}
 device_data %>% 
-  ggplot(aes(y = ReleasedYr, color = Line, fill = Line)) +
+  ggplot(aes(y = released_yr, color = line, fill = line)) +
   geom_bar(stat="count") +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
@@ -352,7 +353,7 @@ device_data %>%
 ```{r}
 # Batterty Lives
 device_data %>% 
-  ggplot(aes(y = `Battery life`, color = Line, fill = Line)) +
+  ggplot(aes(y = battery_life, color = line, fill = line)) +
   geom_bar(stat="count") +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
@@ -366,7 +367,7 @@ device_data %>%
 ```{r}
 # Waterproof
 device_data %>% 
-  ggplot(aes(y = `Water resitance`, color = Line, fill = Line)) +
+  ggplot(aes(y = water_resitance, color = line, fill = line)) +
   geom_bar(stat="count") +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
@@ -381,7 +382,7 @@ device_data %>%
 # Other performance
 library(ggpubr)
 ggballoonplot(device_performance, 
-              x="Line", 
+              x="line", 
               y="name", 
               size = "percentage", 
               fill = "percentage",

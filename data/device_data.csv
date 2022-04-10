@@ -1,4 +1,4 @@
-Device name,Line,Recommended retail price,Battery life,Water resitance,Heart rate sensor,Pulse oximiter,GPS,Sleep tracking,Smart notifications,Contactless payments,Released,Brand,ReleasedYr,ReleasedF
+device_name,line,recommended_retail_price,battery_life,water_resitance,heart_rate_sensor,pulse_oximiter,gps,sleep_tracking,smart_notifications,contactless_payments,released,brand,released_yr,released_f
 Run ON,Run,349.99,Up to 21 days,"Waterproof, 10 ATM",Yes,Yes,Yes,Yes,Yes,Yes,2021-12-04,Mingar,2021,2021-12-04
 Advance 2,Advance,145,Up to 7 days,Resistant,Yes,No,Yes,Yes,Yes,Yes,2021-07-08,Mingar,2021,2021-07-08
 Rush 5,Rush,179.99,Up to 7 days,Waterproof,Yes,Yes,Yes,Yes,Yes,Yes,2021-03-17,Bitfit,2021,2021-03-17
