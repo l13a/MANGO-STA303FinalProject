@@ -173,18 +173,19 @@ device_cust$sex_binary <-  ifelse(device_cust$sex == "Female", 1, 0)
 device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
 t.test(sex_binary~ line_binary, data = device_cust, var.equal = TRUE)
 ```
-
+### Income of customers
 
 
 ```{r}
 income <-  read.csv("./data/median_income.csv")
-group_income <- inner_join(device_cust, income) %>% select(c("line", "hhld_median_inc"))
+group_income <- inner_join(device_cust, income, by = "CSDuid") %>% select(c("line_binary", "hhld_median_inc"))
 
-group_income %>% ggplot(aes(x= hhld_median_inc)) + geom_histogram() + facet_wrap("line")
-mod <- lm(hhld_median_inc ~ line, data = group_income)
-summary(mod)
+t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
+#group_income %>% ggplot(aes(x= hhld_median_inc)) + geom_histogram() + facet_wrap("line")
+#mod <- lm(hhld_median_inc ~ line, data = group_income)
+#summary(mod)
 
-summary(aov(hhld_median_inc ~ line, data = group_income))
+#summary(aov(hhld_median_inc ~ line, data = group_income))
 ```
 
 
