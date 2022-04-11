@@ -242,7 +242,8 @@ Figure C shows that there is not much relationship between duration of sleep and
 1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population
 2.  Random Effects (each individual) come from a normal distribution
 3.  Random Effect errors have constant variance: 
-```{r, include = TRUE, echo = FALSE, message=FALSE}
+
+```{r, include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3}
 temp_race_sleep_data <- race_sleep_data %>% 
   filter(!(flags == 0)) %>% 
   group_by(cust_id) %>% 
@@ -252,9 +253,11 @@ temp_race_sleep_data <- race_sleep_data %>%
 temp_race_sleep_data <- data.frame(temp_race_sleep_data)
 
 temp_race_sleep_data %>% ggplot(aes(y = var)) + geom_boxplot() + scale_colour_manual(values = skin_tone_palette) + theme_minimal() + 
-  labs(title = "Spread of the Variance of Log(# of flags) for each individual",
-       y = "Var(Log(# of flags))") + theme(legend.position="none")
+  labs(title = "Spread of the Variance of Log(# of flags) for each user",
+       y = "Var(Log(# of flags))") + theme(legend.position="none") + theme(text = element_text(size = 7))
+
 ```
+
 We see that the variance of the number of flags transformed by the link function (log) is mostly the same with little spread across individuals. This suggests that the homoscedasiticy of random effect errors assumption is satisfied.
 
 4.  Poisson link function is appropriate:
