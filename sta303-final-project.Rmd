@@ -1,6 +1,6 @@
 ---
-title: "Are the popular physical wearable devices fair?"
-subtitle: "Investigating customer demographics and product performance for MINGAR wearable devices"
+title: "Investigating customer demographics and product performance for MINGAR wearable devices"
+subtitle: "Potential performance bias for users with different emoji modifiers"
 author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-07
 lang: "en"
@@ -71,10 +71,10 @@ The rest of this summary presents key findings and highlights limitations.
 t<- tribble(~"",~"Old Line", ~"New Line",
   "Location", "Ontario, followed by Quebec, Alberta and British Columbia", "Ontario, followed by Alberta, Quebec and British Columbia",
   "Gender", " 58.6% female", " 57.8% female",
-  "Mean Income", "73166.18" ,"68815.47", 
+  "Income", "73166.18" ,"68815.47", 
 )
 
-knitr::kable(t, caption = "Demographics of customers in old and new line")
+knitr::kable(t, align = 'l', caption = "Demographics of customers in old and new line")
 ```
 
 ```{r include = TRUE, echo = FALSE, fig.cap="Distribution of Flags for each Emoji Modifier"}
@@ -103,7 +103,7 @@ Our review and assessments involve internal data on customer demographics provid
 
 In the following sections, the aforementioned datasets will be used to answer three research questions, with each detailing data manipulation, statistical methods, and conclusions. A summary of findings across the three questions will be presented in the Discussion section, along with the strengths and limitations of the analysis. 
 
-### Research questions
+## Research questions
 
 -   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
 
@@ -267,9 +267,9 @@ Figure 6B shows that darker emoji modifier users seem to have a larger spread an
 
 Figure 6C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
-## Fitting a GLMM with Poisson Link Function
+### Fitting a GLMM with Poisson Link Function
 
-### Model Assumption Checks
+#### Model Assumption Checks
 
 1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population
 2.  Random Effects (each individual) come from a normal distribution
@@ -307,7 +307,7 @@ knitr::kable(mean_var_check, align = 'c', col.names = c("Emoji Modifier  ","  Me
 
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
 
-### Model Fitting
+#### Model Fitting
 
 $$\begin{aligned}Y_{irs} &\thicksim Poisson(\lambda_{irs})\\
 \log(\lambda_{irs}) &= \beta_0 + X_{irs}\beta + U_{i}\\
