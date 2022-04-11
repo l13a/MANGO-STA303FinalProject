@@ -20,8 +20,8 @@ output:
 
 # Set up
 
-```{r, libraries, message=FALSE}
-# Set up any libraries you need
+```{r, libraries, message=FALSE, warning=FALSE}
+# Set up any libraries needed
 library(tidyverse)
 library(polite)
 library(rvest)
@@ -31,11 +31,14 @@ library(eeptools)
 library(janitor)
 library(plyr)
 library(dplyr)
+library(cancensus)
+library(haven)
 ```
 
 # Loading client data
 
-```{r}
+```{r load client data}
+# Load all the client data from data_raw to r
 break_glass_in_case_of_emergency <- readRDS("./data-raw/break_glass_in_case_of_emergency.Rds")
 cust_dev <- readRDS("./data-raw/cust_dev.Rds")
 cust_sleep <- readRDS("./data-raw/cust_sleep.Rds")
@@ -47,11 +50,11 @@ device <- readRDS("./data-raw/device.Rds")
 
 ## Web scraping industry data
 
-```{r}
+```{r web scraping}
+# Web scraping the device data from the following url
 url <- "https://fitnesstrackerinfohub.netlify.app/"
 
-# Make sure this code is updated appropriately to provide 
-# informative user_agent details
+# Provide the appropriate user agent for web scraping the data
 target <- bow(url,
               user_agent = "xinyil.chen@mail.utoronto.ca for STA303/1002 project",
               force = TRUE)
@@ -62,6 +65,7 @@ target
 
 html <- scrape(target)
 
+# Store the device data into r
 device_data <- html %>% 
   html_elements("table") %>% 
   html_table() %>% 
@@ -69,15 +73,19 @@ device_data <- html %>%
 
 ```
 
-```{r}
+```{r Wrangling the device data}
+# Cleaning and Wrangling the device data 
+
+# Extract the year from the released date
 device_data$Released <- as.Date(device_data$Released, "%Y-%m-%d")
-
 device_data$ReleasedYr <- format(device_data$Released, format="%Y")
-
 device_data$ReleasedF <- as.factor(device_data$Released)
 
+
+# Convert the battery life as factor
 device_data$`Battery life` <- as.factor(device_data$`Battery life`)
 
+# Mutate the level for battery life and water resitance into qppropriate order
 device_data <- device_data %>% 
   mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 3 days", after = 0)) %>% 
   mutate(`Battery life` = fct_relevel(`Battery life`, "Up to 5 days", after = 1)) %>%
@@ -92,24 +100,30 @@ device_data <- device_data %>%
   mutate(`Water resitance` = fct_relevel(`Water resitance`, "Waterproof, 5 ATM", after = 2)) %>% 
   mutate(`Water resitance` = fct_relevel(`Water resitance`, "Waterproof, 10 ATM", after = 3))
 
+# Set all the category variable to factors
 device_data$`Heart rate sensor` <- as.factor(device_data$`Heart rate sensor`)
 device_data$`Pulse oximiter` <- as.factor(device_data$`Pulse oximiter`)
 device_data$GPS <- as.factor(device_data$GPS)
 device_data$`Sleep tracking` <- as.factor(device_data$`Sleep tracking`)
 device_data$`Smart notifications` <- as.factor(device_data$`Smart notifications`)
 device_data$`Contactless payments` <- as.factor(device_data$`Contactless payments`)
-device_data <- device_data %>% janitor::clean_names()
 
+# Clean the variable names of device data and write it to the data diretory
+device_data <- device_data %>% janitor::clean_names()
 write_csv(device_data, file = "./data/device_data.csv")
 
+################################################################################################\
+# Create the device performance dataset for convenience
 device_performance <- device_data %>% 
-  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, smart_notifications, contactless_payments)) %>% 
+  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, 
+           smart_notifications, contactless_payments)) %>% 
   pivot_longer(-c(line), names_to = "name", values_to = "value") %>% 
   group_by(line, name, value) %>% 
   dplyr::summarise(n = n())
 
 device_performance_total <- device_data %>%
-  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, smart_notifications, contactless_payments)) %>% 
+  select(c(line, heart_rate_sensor, pulse_oximiter, gps, sleep_tracking, 
+           smart_notifications, contactless_payments)) %>% 
   pivot_longer(-c(line), names_to = "name", values_to = "value") %>% 
   group_by(line) %>% 
   dplyr::summarise(total = n())
@@ -118,8 +132,10 @@ device_performance <- device_performance %>%
   filter(value == "Yes")
 
 device_performance <- merge(device_performance, device_performance_total)
-device_performance$percentage <- round(device_performance$n / device_performance$total, 4) *100
-  
+device_performance$percentage <- 
+  round(device_performance$n / device_performance$total, 4) *100
+
+# write the device performance to the data directory
 write_csv(device_performance, file = "./data/device_performance.csv")
 ```
 
@@ -127,12 +143,12 @@ write_csv(device_performance, file = "./data/device_performance.csv")
 # Census API
 Used the most recent census data as most of the sleep data recorded are from 2022. We want the most up to date information s possible for the postal codes of people as they were wearing the devices. 
 ```{r}
-library(haven)
+
 dataset = read_sav("data-raw/pccfNat_fccpNat_082021sav.sav")
 
 postcode <- dataset %>% 
   select(PC, CSDuid) %>%
-  rename(postcode = PC)
+  dplyr::rename(postcode = PC)
 
 customer_with_postal <- postcode %>% right_join(customer, by = "postcode")
 write.csv(postcode, "data/customer_with_postal.csv", row.names=FALSE, quote=FALSE) 
@@ -141,10 +157,12 @@ write.csv(postcode, "data/customer_with_postal.csv", row.names=FALSE, quote=FALS
 
 # Income Data
 
-```{r}
-# install.packages("cancensus")
-library(cancensus)
+```{r Income Data}
+# Use API to get the income data from the CensusMapper
 
+# install.packages("cancensus")
+
+# Provide the appropriate API keys and store the cache to the cache folder
 options(cancensus.api_key = "CensusMapper_62d5b97e34abdba3579b1900089c724a",
         cancensus.cache_path = "cache") # this sets a folder for your cache
 
@@ -167,31 +185,35 @@ median_income <- census_data_csd %>%
   as_tibble() %>% 
   select(CSDuid = GeoUID, contains("median"), Population) %>% 
   mutate(CSDuid = parse_number(CSDuid)) %>% 
-  rename(hhld_median_inc = 2)
+  dplyr::rename(hhld_median_inc = 2)
 
+# Write the median_income dataset to the data directory
 write_csv(median_income, file="./data/median_income.csv")
 
 ```
 
 ### demographic data
 
-```{r}
+```{r demographic data}
+
+# Join the device and customer dataset to create a more informative dataset
 device_cust_id <- cust_dev %>% full_join(device, by = "dev_id")
 device_cust <-device_cust_id %>% full_join(customer, by = "cust_id")
 
+# Extract the year from the date, and create the age column based on the date
 device_cust$dob <- as.Date(device_cust$dob)
 device_cust$age <- floor(age_calc(device_cust$dob, units = "years"))
 
+# Join the dataset with itself by postcode
 device_cust <- unique(inner_join(device_cust, postcode, by="postcode") )
-
-
-#write_csv(device_cust_id, file = "./data/device_cust_id.csv")
-#write_csv(device_cust, file = "./data/device_cust.csv")
 ```
 
 
 ### "racist data"
-```{r}
+```{r racist data}
+# Wrangling the racist dataset to investigate the our second research question
+
+# Filter and select all the interested fields
 race_sleep_data <- customer %>% 
   full_join(cust_sleep, by = "cust_id") %>% 
   select("cust_id", "sex", "emoji_modifier", "date", "duration", "flags") %>%
@@ -200,18 +222,31 @@ race_sleep_data <- customer %>%
   filter(!is.na(flags)) %>%
   filter(!is.na(emoji_modifier))
 
+# Created new column for skin tone based on the emoji modifier in the dataset
 race_sleep_data$skin_tone <- as.factor(
-ifelse(race_sleep_data$emoji_modifier == "U+1F3FB","light", 
-ifelse(race_sleep_data$emoji_modifier == "U+1F3FC", "medium_light", ifelse(race_sleep_data$emoji_modifier == "U+1F3FD", "medium", ifelse(race_sleep_data$emoji_modifier == "U+1F3FE", "medium_dark",                             "dark")))))
+      ifelse(race_sleep_data$emoji_modifier == "U+1F3FB","light", 
+      ifelse(race_sleep_data$emoji_modifier == "U+1F3FC", "medium_light", 
+      ifelse(race_sleep_data$emoji_modifier == "U+1F3FD", "medium", 
+      ifelse(race_sleep_data$emoji_modifier == "U+1F3FE", "medium_dark", "dark")))))
 
-race_sleep_data <- race_sleep_data %>% left_join(cust_dev, by = "cust_id") 
+# Join the race data with outher dataset to create a more informative dataset
+race_sleep_data <- race_sleep_data %>% 
+  left_join(cust_dev, by = "cust_id") 
 
-race_sleep_data <- race_sleep_data %>% left_join(device, by = "dev_id") %>% select("cust_id", "sex", "skin_tone", "date", "duration", "flags", "dev_id", "device_name")
+race_sleep_data <- race_sleep_data %>% 
+  left_join(device, by = "dev_id") %>% 
+  select("cust_id", "sex", "skin_tone", "date", 
+         "duration", "flags", "dev_id", "device_name")
 
+# Clean the variable names 
 device_data <- device_data %>% janitor::clean_names() 
 
-race_sleep_data <- race_sleep_data %>% left_join(device_data, by = "device_name") %>% select("cust_id", "sex", "skin_tone", "date", "duration", "flags", "device_name", "line", "battery_life", "water_resitance", "heart_rate_sensor", "pulse_oximiter", "gps", "sleep_tracking", "smart_notifications")
-
+race_sleep_data <- race_sleep_data %>% 
+  left_join(device_data, by = "device_name") %>% 
+  select("cust_id", "sex", "skin_tone", "date", "duration", 
+         "flags", "device_name", "line", "battery_life", 
+         "water_resitance", "heart_rate_sensor", "pulse_oximiter", 
+         "gps", "sleep_tracking", "smart_notifications")
 
 #put in data folder
 write_csv(race_sleep_data, file = "data/race_sleep_data.csv")
