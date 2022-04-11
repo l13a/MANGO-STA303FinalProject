@@ -444,11 +444,13 @@ Findings from research question 1 suggest that buyers of MINGAR’s newer afford
 
 Results from research question 2 indicate that MINGAR’s devices are significantly less accurate at tracking sleep scores of dark skin emoji-modifiers than those of light skin emoji-modifiers, implying that the devices may have great potential to perform more poorly on dark skin individuals. In anticipation of future complaints, we suggest MINGAR prepare contingency plans, such as creating a Frequently Asked Questions page to assure users that this is a known technical challenge MINGAR is actively working to resolve. 
 
-Lastly, from research question 3, we observe “Run” and “Advanced'' to be the most popular lines among users of MINGAR. However, despite the recent launch of “Active” and “Advance”, their combined sales have exceeded the sales of “Run”, the traditional high-end line with most features. These results imply that customers tend to favour approachable price points over functionality when choosing a device. 
+Lastly, from research question 3, we observe "Run" and "Advanced" to be the most popular lines among users of MINGAR. However, despite the recent launch of “Active” and “Advance”, their combined sales have exceeded the sales of “Run”, the traditional high-end line with most features. These results imply that customers tend to favour approachable price points over functionality when choosing a device. 
 
 ### Strengths and limitations
 
 At MANGO, one of our greatest strengths is that we take ethical data practices extremely seriously. In particular, we have a track record of handling identity-based data with sensitivity, integrity, and tact, which is demonstrated in all our past and current collaboration projects and also consistent with MINGAR’s values. 
+
+In addition, we were meticulous about checking all model assumptions before making a prediction. We also used one of the most considerate models -- generalized linear mixed models -- to not only take account of the speciality in our response variable and the individual random effect differences, being considerate and careful in the conclusions that we make.
 
 However, there are several limitations in our analysis. The first limitation is that the Kruskal Wallis Test, used in the first research question to identify age distributions among different product lines, does not meet the model assumption of same shape distributions, as the age distribution of the “Active” line resembles a binomial distribution, while the remaining three product lines appear relatively normal. We can potentially attribute this violation to the lack of available data collected on the “Active” line.
 
