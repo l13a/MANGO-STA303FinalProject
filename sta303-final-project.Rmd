@@ -1,6 +1,6 @@
 ---
-title: "Report title"
-subtitle: "Subtitle that indicates findings"
+title: "Are the popular physical wearable devices fair?"
+subtitle: "Investigating customer demographics and product performance for MINGAR wearable devices"
 author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-07
 lang: "en"
@@ -39,21 +39,9 @@ library(tibble)
 knitr::opts_chunk$set(include=FALSE)
 ```
 
-# General comments (you can delete this section)
-
-*Before making any changes, knit this Rmd to PDF and change the name of the PDf to something like 'original-instructions.pdf', or whatever you like (it is just for your reference).. Then you can delete this section and if you want to check what it said, just open the other PDF. You don't HAVE to use this particular template, but you DO need to write you report in RMarkdown and include a cover page.*
-
-*The cover page must be a single stand alone page and have:*
-
--   *A title and subtitle (that indicate your findings)*
--   *"Report prepared for MINGAR by" your company name*
--   *Date (assessment submission date is fine)*
-
-*You can change the colour of this cover to any colour you would like by replacing 6C3082 in the YAML above (`titlepage-color:`) to another hex code. You could use this tool to help you:* <https://htmlcolorcodes.com/color-picker/>
-
-*Note: There should NOT be a table of contents on the cover page. It should look like a cover.*
-
 \newpage
+
+# Executive summary
 
 ## Background and aim 
 MANGO was hired to generate insights for MINGAR’s marketing and product considerations. The purposes of this report are threefold: (1) to identify demographic characteristics of buyers of MINGAR’s two newer, more affordable lines of fitness tracking wearables, “Active” and “Advance”; (2) to investigate potential performance issues with sleep scores in darker skin users; and (3) to understand product features that drive sales.
@@ -256,14 +244,14 @@ race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = s
 ```
 
 ```{r, include = TRUE, echo = FALSE}
-ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
+ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("6", "7"), ncol = 1, nrow = 2), labels = c("5"))
 ```
 
-Figure A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
+Figure 5 shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
 
-Figure B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
+Figure 6 shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
 
-Figure C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
+Figure 7 shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
 ## Fitting a GLMM with Poisson Link Function
 
@@ -273,7 +261,7 @@ Figure C shows that there is not much relationship between duration of sleep and
 2.  Random Effects (each individual) come from a normal distribution
 3.  Random Effect errors have constant variance:
 
-```{r, include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3}
+```{r, include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3, fig.cap="Boxplot of variance of log(# of flags) for all users"}
 temp_race_sleep_data <- race_sleep_data %>% 
   filter(!(flags == 0)) %>% 
   group_by(cust_id) %>% 
@@ -356,7 +344,7 @@ device_cust <- read.csv("./data/device_cust.csv")
 device_performance <- read.csv("./data/device_performance.csv")
 ```
 
-```{r echo=FALSE, include=TRUE, fig.height=5, fig.width=5}
+```{r echo=FALSE, include=TRUE, fig.height=3, fig.width=3, fig.cap="Percentage of devices that have certain Functionalities for each Line"}
 # All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
@@ -413,7 +401,7 @@ p1 <- device_data %>%
 #   theme_minimal()
 ```
 
-```{r fig.cap="Number of realesed products vs Batttery Life", echo=FALSE}
+```{r, echo=FALSE}
 # Batterty Lives
 p2 <- device_data %>% 
   ggplot(aes(y = battery_life, color = line, fill = line)) +
@@ -452,19 +440,19 @@ p4<-device_cust %>%
 ```{r echo=FALSE, include=TRUE}
 # A summary graph
 ggarrange(p1, p2, p3, p4,
-          labels = c("A", "B", "C", "D"),
+          labels = c("9", "10", "11", "12"),
           common.legend = TRUE, 
           legend = "bottom",
           ncol = 2, nrow = 2)
 ```
 
-**Plot A** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
+**Plot 9** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
 
-**Plot B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
+**Plot 10** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
 
-**Plot C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
+**Plot 11** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
 
-**Plot D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
+**Plot 12** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
 
 ### Conclusions
 
@@ -519,8 +507,6 @@ A final limitation is that the postal codes extracted from PCCF are dated (2016)
 \newpage
 
 # Appendix
-
-*These appendices should outline in more detail the steps taken to access the following datasets. They should NOT include code, but should briefly describe the steps and important considerations. I.e., show that you understand what needs to be considered when web scraping, protecting licensed data, etc.*
 
 ## Web scraping industry data on fitness tracker devices
 We have respected the web scraping policies by providing our contact information to the web scraping agent. We have also respected crawl limit of 12 seconds. We have not used the scraped data in a way that reveals user privacy information. 
