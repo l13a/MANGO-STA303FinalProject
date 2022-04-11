@@ -85,7 +85,7 @@ race_sleep_data <- race_sleep_data %>%
   mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
 
 race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
-  labs(title = "Distribution of Flags for each Emoji Modifier",
+  labs(title = "Number of Reported Flags for each Emoji Modifier",
        x = "Number of Flags",
        y = "Count") + theme(legend.position="none") 
 ```
@@ -261,11 +261,11 @@ race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = s
 ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
 ```
 
-Figure 5A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
+Figure 6A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
 
-Figure 5B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
+Figure 6B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
 
-Figure 5C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
+Figure 6C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
 ## Fitting a GLMM with Poisson Link Function
 
@@ -341,7 +341,7 @@ knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"), caption =
 
 From the model, we see that the general trend is the darker one's emoji modifier is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light emoji modifier, we are 95% confident that, compared to light emoji modifier users, the mean number of flags for a user with the dark emoji modifier changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of emoji modifier predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of emoji modifiers. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
 
-## What are the main differences between different lines of the device?
+## Q3 What are the main differences between different lines of the device?
 
 In this research question, we are interested in the differences of the **performance/price** among the different lines of services, combined with the different demographic of the users between lines, we can give a report summary/advice for what has changed and how the change affects the target audience.
 
@@ -460,13 +460,13 @@ ggarrange(p1, p2, p3, p4,
           ncol = 2, nrow = 2)
 ```
 
-**Plot 8A** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
+**Plot 9A** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
 
-**Plot 8B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
+**Plot 9B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
 
-**Plot 8C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
+**Plot 9C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
 
-**Plot 8D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
+**Plot 9D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
 
 ### Conclusions
 
