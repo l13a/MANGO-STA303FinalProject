@@ -77,6 +77,20 @@ t<- tribble(~"",~"Old Line", ~"New Line",
 knitr::kable(t, caption = "Demographics of customers in old and new line")
 ```
 
+```{r include = TRUE, echo = FALSE, fig.cap="Distribution of Flags for each Emoji Modifier"}
+race_sleep_data <- read.csv("./data/race_sleep_data.csv")
+skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
+
+race_sleep_data <- race_sleep_data %>%
+  mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
+
+race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
+  labs(title = "Distribution of Flags for each Emoji Modifier",
+       x = "Number of Flags",
+       y = "Count") + theme(legend.position="none") 
+```
+
+
 \newpage
 
 # Technical report
@@ -203,7 +217,7 @@ t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 
 From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
-## How does emoji modifier color affect the accuracy of wearable devices?
+## Q2 How does emoji modifier color affect the accuracy of wearable devices?
 
 ### Data Manipulation
 
@@ -243,15 +257,15 @@ race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = s
        y = "Number of Flags") + theme(legend.position="none") + theme(text = element_text(size = 6))
 ```
 
-```{r, include = TRUE, echo = FALSE}
-ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("6", "7"), ncol = 1, nrow = 2), labels = c("5"))
+```{r, include = TRUE, echo = FALSE, fig.cap= "Exploratory plots for users with different emoji modifier"}
+ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
 ```
 
-Figure 5 shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
+Figure 5A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
 
-Figure 6 shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
+Figure 5B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
 
-Figure 7 shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
+Figure 5C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
 ## Fitting a GLMM with Poisson Link Function
 
@@ -261,7 +275,7 @@ Figure 7 shows that there is not much relationship between duration of sleep and
 2.  Random Effects (each individual) come from a normal distribution
 3.  Random Effect errors have constant variance:
 
-```{r, include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3, fig.cap="Boxplot of variance of log(# of flags) for all users"}
+```{r fig.cap="Boxplot of variance of log(\\# of flags) for all users", include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3}
 temp_race_sleep_data <- race_sleep_data %>% 
   filter(!(flags == 0)) %>% 
   group_by(cust_id) %>% 
@@ -288,7 +302,7 @@ mean_var_check <- race_sleep_data %>% group_by(skin_tone) %>% summarise(mean = m
 
 mean_var_check <- data.frame(mean_var_check)
 
-knitr::kable(mean_var_check, align = 'c', col.names = c("Emoji Modifier  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"))
+knitr::kable(mean_var_check, align = 'c', col.names = c("Emoji Modifier  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"), caption = "Compare the mean and variance of number of flags for each emoji modifier group")
 ```
 
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
@@ -321,7 +335,7 @@ expect_conf <- exp(ci)
 
 expect_conf <- data.frame(expect_conf)
 
-knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"))
+knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"), caption = "Exponential of the confidence intervals for GLMM model")
 
 ```
 
@@ -344,7 +358,7 @@ device_cust <- read.csv("./data/device_cust.csv")
 device_performance <- read.csv("./data/device_performance.csv")
 ```
 
-```{r echo=FALSE, include=TRUE, fig.height=3, fig.width=3, fig.cap="Percentage of devices that have certain Functionalities for each Line"}
+```{r echo=FALSE, include=TRUE, fig.height=5, fig.width=5, fig.cap="Percentage of devices that have certain Functionalities for each Line"}
 # All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
@@ -437,22 +451,22 @@ p4<-device_cust %>%
        y = "Line") + theme_minimal() + theme(text = element_text(size = 6))
 ```
 
-```{r echo=FALSE, include=TRUE}
+```{r echo=FALSE, include=TRUE, fig.cap="Comparing different functionalities for different lines"}
 # A summary graph
 ggarrange(p1, p2, p3, p4,
-          labels = c("9", "10", "11", "12"),
+          labels = c("A", "B", "C", "D"),
           common.legend = TRUE, 
           legend = "bottom",
           ncol = 2, nrow = 2)
 ```
 
-**Plot 9** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
+**Plot 8A** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
 
-**Plot 10** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
+**Plot 8B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
 
-**Plot 11** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
+**Plot 8C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
 
-**Plot 12** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
+**Plot 8D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
 
 ### Conclusions
 
@@ -509,19 +523,18 @@ A final limitation is that the postal codes extracted from PCCF are dated (2016)
 # Appendix
 
 ## Web scraping industry data on fitness tracker devices
-We have respected the web scraping policies by providing our contact information to the web scraping agent. We have also respected crawl limit of 12 seconds. We have not used the scraped data in a way that reveals user privacy information. 
+We have respected the web scraping policies by providing our contact information to the web scraping agent. We have also respected crawl limit of 12 seconds. We have not used the scraped data in a way that reveals user privacy information. The scraped fitness devices data was only modified by some name changes and was solely used to compare between the different lines for MINGAR. 
 
 ## Accessing Census data on median household income
 
 ### API access
-
-We used APIs to get the data from the Canadian census website. We signed up for the cancensus API through the website and get the API key for our account, and used the API key to fetch the income data.
+We used APIs to get the data from the Canadian census website. We signed up for the cancensus API through the website and get the API key for our account, and used the API key to fetch the income data. The income dataset was then joined with the exisiting customer dataset by customer ID to ensure that we only work with information about our customers.
 
 ### Ethical Professional consideration
 
 Based on the policy on the website, data on CensusMapper can be freely linked or downloaded through the provided interface. And we are allowed to explore census variables ans data for specific geographic. In our research, we respects the policy posted on the website, we used the data to reproduce new dataset, and analyze our research questions based on the data.
 
 ## Accessing postcode conversion files
-We chose to download the census data from August,2021. We want the most recent postcode data from the Census since we want the most up to date information about where people are living.
+We chose to download the census data from August,2021. We want the most recent postcode data from the Census since we want the most up to date information about where people are living. We joined only filtered out the relevant postcode conversion data that matches with customers in our data. 
 
 **Final advice: KNIT EARLY AND OFTEN!**
