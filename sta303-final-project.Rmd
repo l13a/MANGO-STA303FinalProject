@@ -490,6 +490,7 @@ Above all, we noticed that the line *Run* and *Advanced* are the most popular li
 *These appendices should outline in more detail the steps taken to access the following datasets. They should NOT include code, but should briefly describe the steps and important considerations. I.e., show that you understand what needs to be considered when web scraping, protecting licensed data, etc.*
 
 ## Web scraping industry data on fitness tracker devices
+We have respected the web scraping policies by providing our contact information to the web scraping agent. We have also respected crawl limit of 12 seconds. We have not used the scraped data in a way that reveals user privacy information. 
 
 ## Accessing Census data on median household income
 
@@ -502,5 +503,6 @@ We used APIs to get the data from the Canadian census website. We signed up for 
 Based on the policy on the website, data on CensusMapper can be freely linked or downloaded through the provided interface. And we are allowed to explore census variables ans data for specific geographic. In our research, we respects the policy posted on the website, we used the data to reproduce new dataset, and analyze our research questions based on the data.
 
 ## Accessing postcode conversion files
+We chose to download the census data from August,2021. We want the most recent postcode data from the Census since we want the most up to date information about where people are living.
 
 **Final advice: KNIT EARLY AND OFTEN!**
