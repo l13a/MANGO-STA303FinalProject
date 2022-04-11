@@ -91,7 +91,7 @@ knitr::kable(t, caption = "Demographics of customers in old and new line")
 
 -   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
 
--   Are the devices "racist"?
+-   How does skin color (identified by one's emoji modifiers) affect the number of quality flags that MINGAR wearable devices report during a sleep tracking session?
 
 -   What are the main differences between different lines of the device?
 
@@ -201,7 +201,7 @@ t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 
 From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
-## How does skin color affect the accuracy of wearable devices?
+## How does emoji modifier color affect the accuracy of wearable devices?
 
 ### Data Manipulation
 
@@ -222,7 +222,7 @@ race_sleep_data$sex <- ifelse(is.na(race_sleep_data$sex), "Not Answered", race_s
 ```{r}
 # distribution of number of flags for each race 
 race_fig_1 <- race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
-  labs(title = "Distribution of Flags for each Skin Tone",
+  labs(title = "Distribution of Flags for each Emoji Modifier",
        x = "Number of Flags",
        y = "Count") + theme(legend.position="none") + theme(text = element_text(size = 6))
 
@@ -230,13 +230,13 @@ race_fig_1 <- race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_
 # number of individuals using each line for each race by sex
 
 race_fig_2 <- race_sleep_data %>% ggplot(aes(line, fill = skin_tone)) + facet_wrap("sex") + geom_bar() + scale_fill_manual(values = skin_tone_palette) + theme_minimal() +
-  labs(title = "Num of Users using each Line, sort by Sex and Skin Tone", 
+  labs(title = "Num of Users using each Line, sort by Sex and Emoji Modifier", 
        x = "Line",
        y = "Number of Users") + theme(legend.position="none") + theme(text = element_text(size = 6))
 
 # number of flags v.s. duration, coloured by skin tone
 race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = skin_tone)) + geom_point()+ scale_colour_manual(values = skin_tone_palette) + theme_minimal() + 
-  labs(title = "Sleep Duration v.s. Number of Flags, coloured by Skin Tone", 
+  labs(title = "Sleep Duration v.s. Number of Flags, coloured by Emoji Modifier", 
        x = "Sleep Duration",
        y = "Number of Flags") + theme(legend.position="none") + theme(text = element_text(size = 6))
 ```
@@ -245,9 +245,9 @@ race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = s
 ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
 ```
 
-Figure A shows that there are more light skinned users than dark skinned users and there are more females than males and intersex users. Most users use the Advance or Run lines.
+Figure A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males and intersex users. Most users use the Advance or Run lines.
 
-Figure B shows that darker skinned users seem to have a larger spread and larger mean of number of flags than compared to lighter skinned users, suggesting some evidence of a performance bias.
+Figure B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
 
 Figure C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
@@ -286,7 +286,7 @@ mean_var_check <- race_sleep_data %>% group_by(skin_tone) %>% summarise(mean = m
 
 mean_var_check <- data.frame(mean_var_check)
 
-knitr::kable(mean_var_check, align = 'c', col.names = c("Skin Tone  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"))
+knitr::kable(mean_var_check, align = 'c', col.names = c("Emoji Modifier  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"))
 ```
 
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
@@ -298,14 +298,14 @@ $$\begin{aligned}Y_{irs} &\thicksim Poisson(\lambda_{irs})\\
 U_i &\thicksim N(0, \sigma ^2) 
 \end{aligned}$$
 
--   $Y_{irs}$ is the number of flags for individual $i$ with skin tone $r$ and sex $s$
--   $X_{irs}$ has indicator variables for skin tone and sex
+-   $Y_{irs}$ is the number of flags for individual $i$ with emoji modifier $r$ and sex $s$
+-   $X_{irs}$ has indicator variables for emoji modifier and sex
 -   $U_i$ is the individual level random effect
 
 ```{r}
 
-race1<- lme4::glmer(flags ~ skin_tone + (1 | cust_id), 
-        family='poisson', data=race_sleep_data)
+# race1<- lme4::glmer(flags ~ skin_tone + (1 | cust_id), 
+#         family='poisson', data=race_sleep_data)
 #summary(race1)
 
 race2<- lme4::glmer(flags ~ skin_tone + sex + (1 | cust_id), 
@@ -323,7 +323,7 @@ knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"))
 
 ```
 
-From the model, we see that the general trend is the darker one is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light skin tone, we are 95% confident that, compared to light skinned users, the mean number of flags for a user with the dark skin tone changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of skin tone predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of skin tones. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
+From the model, we see that the general trend is the darker one's emoji modifier is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light emoji modifier, we are 95% confident that, compared to light emoji modifier users, the mean number of flags for a user with the dark emoji modifier changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of emoji modifier predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of emoji modifiers. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
 
 ## What are the main differences between different lines of the device?
 
