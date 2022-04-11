@@ -180,6 +180,7 @@ group_income <- inner_join(device_cust, income, by = "CSDuid") %>% select(c("lin
 group_income %>% ggplot(aes(x= hhld_median_inc, fill = line_binary)) + geom_histogram(bins = 30) + facet_wrap("line_binary") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3")) + theme(legend.position="none") + labs(x="household income")
 
 ```
+
 ```{r}
 t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 ```
@@ -354,13 +355,14 @@ We used three database in this part. The first one is ***device_data***, which i
 ### Exploratory plots
 
 ```{r}
+# Read the dataset from the folder
 device_data <- read.csv("./data/device_data.csv")
 device_cust <- read.csv("./data/device_cust.csv")
 device_performance <- read.csv("./data/device_performance.csv")
 ```
 
 ```{r echo=FALSE, include=TRUE, fig.height=5, fig.width=5}
-# Other performance
+# All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
               x="name", 
@@ -375,7 +377,8 @@ ggballoonplot(device_performance,
 
 The above plot shows the performance of different lines. The size of the circle is the percentage of devices in the line on x-axis that has the functionality on y-axis. Based on the plot, the line *Run* has all of the functionality, while line *Active* and *Advanced* has all except the pulse oximiter. By the size of each circle, the line *Run* has a more diverse functionality than the other two lines. Each device in line *Advanced* almost has the same functionality.
 
-```{r fig.cap="Recommeded Retail price vs Released Date",  echo=FALSE}
+```{r echo=FALSE}
+# Recomended retail Price
 p1 <- device_data %>%
   ggplot(aes(x = released_yr, y = recommended_retail_price, color = line, shape = brand)) +
   geom_point(size = 2) +
@@ -387,6 +390,7 @@ p1 <- device_data %>%
 ```
 
 ```{r eval=FALSE, include=FALSE}
+# Calculate the mean price for each company
 mingar <-  device_data %>% 
               na.omit() %>% 
               filter(brand == "Mingar") %>% 
@@ -437,6 +441,7 @@ p3<-device_data %>%
 ```
 
 ```{r}
+# Sales for each line
 p4<-device_cust %>% 
   ggplot(aes(y=line))+
   geom_bar() +
@@ -446,6 +451,7 @@ p4<-device_cust %>%
 ```
 
 ```{r echo=FALSE, include=TRUE}
+# A summary graph
 ggarrange(p1, p2, p3, p4,
           labels = c("A", "B", "C", "D"),
           common.legend = TRUE, 
@@ -505,6 +511,12 @@ Above all, we noticed that the line *Run* and *Advanced* are the most popular li
 ## Web scraping industry data on fitness tracker devices
 
 ## Accessing Census data on median household income
+
+### API access 
+
+We used APIs to get the data from the Canadian census website. First, we signed up for the cancensus API through the website and get the API key for our account.
+
+### Ethical Professional consideration
 
 ## Accessing postcode conversion files
 
