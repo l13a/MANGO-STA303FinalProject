@@ -144,21 +144,6 @@ province_data_run <- province_data[province_data$line == "Run",]
 province_data_idol <- province_data[province_data$line == "iDOL",]
 ```
 
-```{r include=F}
-# province_data %>% 
-#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  #marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Active")
-# 
-# province_data_advance %>%
-#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5)) %>% layout(title="Advance")
-# 
-# province_data_run %>% 
-#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="Run")
-# 
-# province_data_idol %>%
-#   plot_ly(x=~longtitude, y=~latitude, type="scatter", mode = "hover", color= ~province_name, size=~num, sizes = c(20, 200),  marker=list(sizemode="diameter", opacity=0.5))%>% layout(title="iDOL")
-
-```
-
 ![Customer location by device line](./data/province_line.png)
 
 ### Age of customers
@@ -229,12 +214,16 @@ The dataset for this question is obtained through combining the customer profile
 ### Exploratory Plots
 
 ```{r}
+#load dataset
 race_sleep_data <- read.csv("./data/race_sleep_data.csv")
+#define skin tone colour palette
 skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
 
+#refactor skin tone level
 race_sleep_data <- race_sleep_data %>%
   mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
 
+#change na to not answered for sex
 race_sleep_data$sex <- ifelse(is.na(race_sleep_data$sex), "Not Answered", race_sleep_data$sex)
 ```
 
@@ -279,6 +268,8 @@ Figure 6C shows that there is not much relationship between duration of sleep an
 3.  Random Effect errors have constant variance:
 
 ```{r fig.cap="Boxplot of variance of log(\\# of flags) for all users", include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3}
+
+#plot boxplot of variance of number of flags
 temp_race_sleep_data <- race_sleep_data %>% 
   filter(!(flags == 0)) %>% 
   group_by(cust_id) %>% 
@@ -322,24 +313,24 @@ U_i &\thicksim N(0, \sigma ^2)
 -   $U_i$ is the individual level random effect
 
 ```{r}
-
 # race1<- lme4::glmer(flags ~ skin_tone + (1 | cust_id), 
 #         family='poisson', data=race_sleep_data)
 #summary(race1)
 
+#fit glmm model
 race2<- lme4::glmer(flags ~ skin_tone + sex + (1 | cust_id), 
         family='poisson', data=race_sleep_data)
 
 ```
 
 ```{r, cache = TRUE, message=FALSE, include = TRUE, echo = FALSE}
+#get exp(confint) and print to table
 ci <- confint(race2,parm="beta_",method="Wald")
 expect_conf <- exp(ci)
 
 expect_conf <- data.frame(expect_conf)
 
 knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"), caption = "Exponential of the confidence intervals for GLMM model")
-
 ```
 
 From the model, we see that the general trend is the darker one's emoji modifier is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light emoji modifier, we are 95% confident that, compared to light emoji modifier users, the mean number of flags for a user with the dark emoji modifier changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of emoji modifier predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of emoji modifiers. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
@@ -389,33 +380,6 @@ p1 <- device_data %>%
        y = "Price") +
   theme(text = element_text(size = 15))+
   theme_minimal() + theme(text = element_text(size = 6))
-```
-
-```{r eval=FALSE, include=FALSE}
-# # Calculate the mean price for each company
-# mingar <-  device_data %>%
-#               na.omit() %>%
-#               filter(brand == "Mingar") %>%
-#               summarise(mean=mean())
-# mean(mingar$recommended_retail_price)
-# bitfit <-  device_data %>%
-#               na.omit() %>%
-#               filter(brand == "Bitfit") %>%
-#               select(recommended_retail_price)
-# mean(bitfit$recommended_retail_price)
-```
-
-```{r echo=FALSE}
-# device_data %>% 
-#   ggplot(aes(y = released_yr, color = line, fill = line)) +
-#   geom_bar(stat="count") +
-#   scale_color_brewer(palette="Set3") +
-#   scale_fill_brewer(palette="Set3") +
-#   labs(title = "Number of realesed products vs Released Year", 
-#        y = "Released Year",
-#        x = "Number of Reealsed products",
-#        caption = "Created by Mango in 2022") +
-#   theme_minimal()
 ```
 
 ```{r, echo=FALSE}
