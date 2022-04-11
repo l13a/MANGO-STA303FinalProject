@@ -162,10 +162,10 @@ device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  f
 
 #### Assumption Checking
 
--     There are two or more levels on the independent variable, product line. 
--     The dependent variable, age, is on a ratio scale and 
--     The observations are independent.
--     All groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
+1. There are two or more levels on the independent variable, product line. 
+2. The dependent variable, age, is on a ratio scale and 
+3. The observations are independent.
+4. All groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
 
 #### Kruskal Wallis Test
 
@@ -351,7 +351,7 @@ In this research question, we are interested in the differences of the **perform
 
 ### Data manipulation
 
-There are three datasets in this part. The first dataset is for devices retrieved by web scraping from the fitness tracker info hub. This dataset contains information on the devices produced by Mingar and Bitfit. The second database holds the data for individuals who purchase the devices from Mingar. This database is obtained by merging the customers' and devices' ids database and customer info database. The third database includes the percentage of the devices having some functionality in each line. This dataset is built by grouping the first dataset by line and functionality. 
+There are three datasets in this part. The first dataset is for devices retrieved by web scraping from the fitness tracker info hub. This dataset contains information on the devices produced by MINGAR and BitFit. The second database holds the data for individuals who purchase the devices from MINGAR. This database is obtained by merging the customers' and devices' ids database and customer info database. The third database includes the percentage of the devices having some functionality in each line. This dataset is built by grouping the first dataset by line and functionality. 
 
 ### Exploratory plots
 
@@ -366,15 +366,15 @@ device_performance <- read.csv("./data/device_performance.csv")
 # All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
-              title = "Percentage of devices that have certain functionalities for each Line",
+              title = "Percentage of devices that have certain functionalities for each line",
               x="name", 
               y="line", 
               size = "percentage", 
               fill = "#ffbf34",
-              ggtheme = theme_minimal())
+              ggtheme = theme_minimal()) + theme(text = element_text(size = 8))
 ```
 
-Figure 8 above shows the performance of different lines. The size of the circle is the percentage of devices in the line on x-axis that has the functionality on y-axis. Based on the plot, the line *Run* has all of the functionalities, while line *Active* and *Advanced* has all except the pulse oximiter. By the size of each circle, the line *Run* has a more diverse functionality than the other two lines. Each device in line *Advanced* almost has the same functionality.
+Figure 8 above shows the performance of different lines. The size of the circle is the percentage of devices in the line on x-axis that has the functionality on y-axis. Based on the plot, the line Run has all of the functionalities, while line Active and Advanced has all except the pulse oximiter. By the size of each circle, the line Run has a more diverse functionality than the other two lines. Each device in line Advanced almost has the same functionality.
 
 ```{r echo=FALSE}
 # Recomended retail Price
