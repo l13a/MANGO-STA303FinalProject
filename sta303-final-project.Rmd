@@ -1,5 +1,5 @@
 ---
-title: "Investigating customer demographics and product performance for MINGAR wearable devices"
+title: "Customer Demographics and Product Performance of MINGAR devices"
 subtitle: "Potential performance bias for users with different emoji modifiers"
 author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-07
@@ -71,10 +71,12 @@ The rest of this summary presents key findings and highlights limitations.
 t<- tribble(~"",~"Old Line", ~"New Line",
   "Location", "Ontario, followed by Quebec, Alberta and British Columbia", "Ontario, followed by Alberta, Quebec and British Columbia",
   "Gender", " 58.6% female", " 57.8% female",
-  "Income", "73166.18" ,"68815.47", 
+  "Mean Income", "$73166.18" ,"$68815.47",
+  "Avg Retail Price", "$378.49", "$73.32",
+  "Sales", "8,579", "10,674"
 )
 
-knitr::kable(t, align = 'l', caption = "Demographics of customers in old and new line")
+knitr::kable(t, align = 'l', caption = "Comparison of old and new line")
 ```
 
 ```{r include = TRUE, echo = FALSE, fig.cap="Distribution of Flags for each Emoji Modifier"}
@@ -120,6 +122,7 @@ To create the plot that demonstrate the location of users in different productio
 In Figure 1, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
 
 ```{r}
+#load dataset
 device_cust <-read.csv("./data/device_cust.csv")
 ```
 
@@ -221,7 +224,7 @@ From the two sample t-test, the mean income in group `new` and group `old` is 68
 
 ### Data Manipulation
 
-The dataset "race_sleep_data" is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. The newly added variable "skin_tone" divides the users to different skin tone categories depending on their selected emoji modifier.
+The dataset for this question is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. The newly added variable "skin_tone" divides the users to different skin tone categories depending on their selected emoji modifier.
 
 ### Exploratory Plots
 
@@ -347,7 +350,7 @@ In this research question, we are interested in the differences of the **perform
 
 ### Data Manipulation
 
-We used three database in this part. The first one is ***device_data***, which is retrieved by web scraping from the fitness tracker info hub. This database includes all the information on the devices produced by the company *Mingar* and *Bitfit.* The second database is ***device_cust*** including the data for individuals who bought the devices from *Mingar.* This database is obtained by merging the database *cust_dev* and *customer*. The third database used in this question is ***data_performance,*** which includes the percentage of the devices having some functionality in each line***.*** This dataset is built by group the *device_data* by line and functionality. More details about the code of data waggling is in the *data_prep.Rmd* file.
+We used three database in this part. The first one is dataset for device, which is retrieved by web scraping from the fitness tracker info hub. This database includes all the information on the devices produced by the company Mingar and Bitfit. The second database includes the data for individuals who bought the devices from Mingar. This database is obtained by merging the customer and devices ids database and customer info database. The third database used in this question includes the percentage of the devices having some functionality in each line. This dataset is built by group the first dataset by line and functionality. 
 
 ### Exploratory plots
 
@@ -516,7 +519,78 @@ A final limitation is that the postal codes extracted from PCCF are dated (2016)
 
 # References
 
-*You don't need to cite course materials, but consider all the the places you got data from, as well as the packages used and R itself. These are all things you should consider citing. Likewise, you might use some external resources on the emoji skin tones/Fitzpatrick scale, etc.*
+Achim Zeileis, Torsten Hothorn (2002). Diagnostic Checking in Regression
+  Relationships. R News 2(3), 7-10. URL https://CRAN.R-project.org/doc/Rnews/
+
+Alboukadel Kassambara (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R
+  package version 0.4.0. https://rpkgs.datanovia.com/ggpubr/
+
+C. Sievert. Interactive Web-Based Data Visualization with R, plotly, and shiny.
+  Chapman and Hall/CRC Florida, 2020.
+
+Colvonen, P. J., DeYoung, P. N., Bosompra, N.-O. A., &amp; Owens, R. L. (2020). 
+    Limiting racial disparities and bias for wearable devices in Health Science 
+    Research. Sleep, 43(10). https://doi.org/10.1093/sleep/zsaa159 
+
+D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R 
+  Journal, 5(1), 144-161. URL http://journal.r-project.org/archive/2013-1/kahle
+  -wickham.pdf
+
+Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015). Fitting Linear
+  Mixed-Effects Models Using lme4. Journal of Statistical Software, 67(1), 1-48.
+  doi:10.18637/jss.v067.i01.
+
+Device and customer data. MINGAR(2022).
+
+Dmytro Perepolkin (2019). polite: Be Nice on the Web. R package version 0.1.1.
+  https://github.com/dmi3kno/polite
+
+Erich Neuwirth (2022). RColorBrewer: ColorBrewer Palettes. R package version 1.1-3.
+
+Gregory R. Warnes, Ben Bolker, Lodewijk Bonebakker, Robert Gentleman, Wolfgang
+  Huber, Andy Liaw, Thomas Lumley, Martin Maechler, Arni Magnusson, Steffen Moeller,
+  Marc Schwartz and Bill Venables (2020). gplots: Various R Programming Tools for
+  Plotting Data. R package version 3.1.1. https://github.com/talgalili/gplots
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York,
+  2016.
+
+Hadley Wickham (2021). rvest: Easily Harvest (Scrape) Web Pages.
+  https://rvest.tidyverse.org/, https://github.com/tidyverse/rvest.
+
+Joe Cheng, Bhaskar Karambelkar and Yihui Xie (2022). leaflet: Create Interactive
+  Web Maps with the JavaScript 'Leaflet' Library. R package version 2.1.0.
+  https://rstudio.github.io/leaflet/
+
+Karthik Ram and Hadley Wickham (2018). wesanderson: A Wes Anderson Palette
+  Generator. R package version 0.3.6. https://github.com/karthik/wesanderson
+
+Kirill Müller and Hadley Wickham (2021). tibble: Simple Data Frames.
+  https://tibble.tidyverse.org/, https://github.com/tidyverse/tibble.
+
+Original S code by Richard A. Becker and Allan R. Wilks. R version by Ray
+  Brownrigg. (2018). mapdata: Extra Map Databases. R package version 2.3.0.
+
+Original S code by Richard A. Becker, Allan R. Wilks. R version by Ray Brownrigg.
+  Enhancements by Thomas P Minka and Alex Deckmyn. (2021). maps: Draw Geographical
+  Maps. R package version 3.4.0.
+
+Population density 2016. Census Mapper. (n.d.). Retrieved April 7, 2022, from
+    https://censusmapper.ca/ 
+
+Postal code conversion file: 2016 census geography. Statistics Canada. (2016).
+    Retrieved April 7, 2022, from: https://mdl.library.utoronto.ca/collections/
+    numeric-data/census-canada/postal-code-conversion-file/2016
+
+R Core Team (2020). R: A language and environment for statistical
+  computing. R Foundation for Statistical Computing, Vienna, Austria.
+  URL https://www.R-project.org/.
+
+STA303/1002 winter 2022 final project. (2022). Fitness tracker info hub. 
+  Retrieved April 7, 2022, from https://fitnesstrackerinfohub.netlify.app/ 
+
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
+  Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
 
 \newpage
 
