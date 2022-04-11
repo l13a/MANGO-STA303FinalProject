@@ -68,7 +68,7 @@ The rest of this summary presents key findings and highlights limitations.
 
 \newpage
 ```{r include=TRUE, echo=FALSE}
-t<- tribble(~"",~"Old Line", ~"New Line",
+t<- tribble(~"",~"Old Lines", ~"New Lines",
   "Location", "Ontario, followed by Quebec, Alberta and British Columbia", "Ontario, followed by Alberta, Quebec and British Columbia",
   "Gender", " 58.6% female", " 57.8% female",
   "Mean Income", "$73166.18" ,"$68815.47",
@@ -76,7 +76,7 @@ t<- tribble(~"",~"Old Line", ~"New Line",
   "Sales", "8,579", "10,674"
 )
 
-knitr::kable(t, align = 'l', caption = "Comparison of old and new line")
+knitr::kable(t, align = 'l', caption = "Comparison of old and new lines")
 ```
 
 ```{r include = TRUE, echo = FALSE, fig.cap="Distribution of Flags for each Emoji Modifier"}
@@ -119,7 +119,7 @@ In the following sections, the aforementioned datasets will be used to answer th
 
 To create the plot that demonstrate the location of users in different production line, we combined the user dataset with web script Census Canada Postal Code Conversion dataset by postcode. We can therefore generate the province that the user belongs to by extracting the first two digit of CSDuid (Census subdivision unique identifier) from the Census dataset.
 
-In Figure 1, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
+In Figure 2, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
 
 ```{r}
 #load dataset
@@ -148,16 +148,17 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 
 ### Age of customers
 
+To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot above, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line. We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, product line.
+
 ```{r fig.cap="Age of customer by device line", include=T, echo=F, fig.height=3}
 
 device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  facet_wrap("line") + theme_minimal() + scale_fill_manual(values = wes_palette("Moonrise3"))+ theme(legend.position="none")
 ```
 
-To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot above, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line. We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, `line`.
 
 #### Assumption Checking
 
--   It satisfies the assumptions that there are two or more levels in the independent variable `line`, the dependent variable,`age`, is on a ratio scale and the observations are independent.
+-   It satisfies the assumptions that there are two or more levels on the independent variable, product line. The dependent variable, age, is on a ratio scale and the observations are independent.
 
 -   The fourth assumption is that all groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
 
@@ -171,7 +172,7 @@ kruskal.test(age ~ line, data = device_cust)
 
 ### Gender of customers
 
-To test whether the customers gender in new and traditional lines are different. We created a new variable `line_binary` which have a value `new` for active and advance line, and `old` for other lines.From the bar plot below, we can notice that there are more female customers in both new line and old lines. Since there are more females in either case, we created a new variable `sex_binary` which have a value 1 for female and 0 for other genders, in order to do the two sample t-test.
+To test whether the customers gender in new and traditional lines are different. We created a new variable for product line which have a value `new` for active and advance line, and `old` for other lines. From the bar plot below, we can notice that there are more female customers in both new line and old lines. Since there are more females in either case, we created a new variable which have a value 1 for female and 0 for other genders, in order to do the two sample t-test.
 
 ```{r fig.cap="Sex of customer by device line", include=T, echo=F, fig.height=2}
 device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
