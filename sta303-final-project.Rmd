@@ -1,6 +1,6 @@
 ---
-title: "Customer Demographics and Product Performance of MINGAR devices"
-subtitle: "Potential performance bias for users with different emoji modifiers"
+title: "Customer Demographics and Product Performance Analysis of MINGAR Products"
+subtitle: "Successful launch of affordable products lines and potential performance bias in users with dark skin emoji-modifiers"
 author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-11
 lang: "en"
@@ -56,7 +56,7 @@ The rest of this summary presents key findings and highlights limitations.
 
 - Female customers make up the majority of the customer case across all product lines (Table 1).
 
-- Customers with darker skin emoji-modifiers have a larger mean number of flags during a sleep session when compared to those with lighter skin emoji-modifiers (Figure1).
+- Customers with darker skin emoji-modifiers have a larger mean number of flags(sensor errors/data quality issues) during a sleep session when compared to those with lighter skin emoji-modifiers (Figure1).
 
 - Despite recent launches, lower price points, and less features, the combined sales of “Active” and “Advance” top all other product lines. 
 
@@ -67,6 +67,8 @@ The rest of this summary presents key findings and highlights limitations.
 - Due to the lack of data, customer income was made equivalent to the median household income based on postal code, therefore may not be reflective of an individual customer's true income level.
 
 \newpage
+
+## Summary Table and Figure
 ```{r include=TRUE, echo=FALSE}
 t<- tribble(~"",~"Old Lines", ~"New Lines",
   "Location", "Ontario, followed by Quebec, Alberta and British Columbia", "Ontario, followed by Alberta, Quebec and British Columbia",
@@ -86,9 +88,12 @@ skin_tone_palette <- c("#ffdbac", "#f1c27d", "#e0ac69", "#c68642", "#8d5524")
 race_sleep_data <- race_sleep_data %>%
   mutate(skin_tone = fct_relevel(skin_tone, "light", "medium_light", "medium", "medium_dark", "dark"))
 
-race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
-  labs(title = "Number of Reported Flags for each Emoji Modifier",
-       x = "Number of Flags",
+race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone", labeller = labeller(skin_tone = c("light" = "light",
+      "medium_light" = "medium light",
+      "medium" = "medium",
+      "medium_dark" = "medium dark",
+      "dark" = "dark"))) + theme_minimal() + 
+  labs(x = "Number of Flags",
        y = "Count") + theme(legend.position="none") 
 ```
 
@@ -105,21 +110,20 @@ Our review and assessments involve internal data on customer demographics provid
 
 In the following sections, the aforementioned datasets will be used to answer three research questions, with each detailing data manipulation, statistical methods, and conclusions. A summary of findings across the three questions will be presented in the Discussion section, along with the strengths and limitations of the analysis. 
 
-## Research questions
+### Research questions
 
--   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
+-   How do the demographic for the traditional lines compare with that of the "Active" and "Advance" lines?
 
--   How do skin tone emoji modifiers affect performance accuracy of wearable devices?
+-   How do skin tone emoji modifiers relate to performance accuracy of wearable devices?
 
 -   What are the main differences between different lines of the device?
 
-## Q1: What are the demographic characteristics of MINGAR customers across different product lines?
+## Q1 How do the demographic for the traditional lines compare with that of the "Active" and "Advance" lines?
 
 ### Location of customers
+We combined the user dataset with web scrapped Census Canada Postal Code Conversion dataset by postcode. We then generated the province that the users belong to by extracting the first two digits of CSDuid (Census subdivision unique identifier) from the Census dataset.
 
-To create the plot that demonstrate the location of users in different production line, we combined the user dataset with web script Census Canada Postal Code Conversion dataset by postcode. We can therefore generate the province that the user belongs to by extracting the first two digit of CSDuid (Census subdivision unique identifier) from the Census dataset.
-
-In Figure 2, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
+In Figure 2, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we notice that Ontario has the most users in all four lines. In the "Active" and "Advance" lines, there are slightly fewer users in Quebec than in Ontario, whereas in "Run" line, there are more users in Alberta than in Quebec. From the result, we are able to see where the target customers is located for products in different lines.
 
 ```{r}
 #load dataset
@@ -148,7 +152,7 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 
 ### Age of customers
 
-To get a sense of how the age of customers is distributed in different lines, we created a histogram plot of the Age of customer by device line. In the plot above, we can see that Advance, Run and iDOL line have a similar distribution that is slightly right-skewed and there is a bimodal distribution in Active line. We deside to use Kruskal Wallis test since the response do not have a normal distribution and there are more than two categories for the independent variable, product line.
+To get a sense of how the age of customers is distributed in different lines, we created a histogram of the Age of customer by device line. In the plot above, we can see that Advance, Run and iDOL lines have a similar distribution which is slightly right-skewed, but there is a bimodal distribution in Active line. We decide to use Kruskal Wallis test to see if the median age for the different lines are the same. We chose this test since the response (age) do not have a normal distribution and there are more than two categories for the independent variable (line).
 
 ```{r fig.cap="Age of customer by device line", include=T, echo=F, fig.height=3}
 
@@ -158,9 +162,10 @@ device_cust %>% ggplot(aes(x = age, fill=line)) + geom_histogram(bins = 30) +  f
 
 #### Assumption Checking
 
--   It satisfies the assumptions that there are two or more levels on the independent variable, product line. The dependent variable, age, is on a ratio scale and the observations are independent.
-
--   The fourth assumption is that all groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
+-     There are two or more levels on the independent variable, product line. 
+-     The dependent variable, age, is on a ratio scale and 
+-     The observations are independent.
+-     All groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
 
 #### Kruskal Wallis Test
 
@@ -172,7 +177,7 @@ kruskal.test(age ~ line, data = device_cust)
 
 ### Gender of customers
 
-To test whether the customers gender in new and traditional lines are different. We created a new variable for product line which have a value `new` for active and advance line, and `old` for other lines. From the bar plot below, we can notice that there are more female customers in both new line and old lines. Since there are more females in either case, we created a new variable which have a value 1 for female and 0 for other genders, in order to do the two sample t-test.
+To test whether the customers' gender in new and traditional lines are different. We created a new variable for product line which have a value `new` for active and advance line, and `old` for other lines. From the bar plot below, we can notice that there are more female customers in both new line and old lines. Since there are more females in either case, we created a new variable which have a value 1 for female and 0 for other genders, in order to do the two sample t-test.
 
 ```{r fig.cap="Sex of customer by device line", include=T, echo=F, fig.height=2}
 device_cust$line_binary <- ifelse(device_cust$line %in% c("Advance", "Active"), "new", "old")
@@ -181,7 +186,7 @@ device_cust %>% ggplot(aes(x = sex, fill=line_binary)) + geom_bar() +  facet_wra
 
 #### Two Sample t-test
 
-We conducted a two sample t-test on it. The mean in group `new` and group `old` is 0.578 and 0.586 respectively. Which indicates that there are approximatly 58% customers that are female in all lines. Since the p-value is 0.2598, we do not reject the hypothesis that the difference in mean gender equal to 0 between two groups of lines. The result indicates that the gender of customers do not very for old and new lines.
+The means in group `new` and group `old` are 0.578 and 0.586 respectively, indicating that approximately 58% customers are female in each line. Since the p-value is 0.2598 (>0.05), we do not reject the hypothesis that the difference in mean gender equal to 0 between two groups of lines. The result indicates that the gender of customers do not vary for old and new lines.
 
 ```{r}
 device_cust$sex_binary <-  ifelse(device_cust$sex == "Female", 1, 0)
@@ -204,13 +209,13 @@ t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 
 #### Two Sample t-test
 
-From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
+We use a two sample t-test for reasons similar to above. From the two sample t-test, the mean income in group `new` and group `old` are 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$ (<0.05). Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
-## Q2 How does emoji modifier color affect the accuracy of wearable devices?
+## Q2 How does emoji modifier color relate to the accuracy of wearable devices?
 
 ### Data Manipulation
 
-The dataset for this question is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. The newly added variable "skin_tone" divides the users to different skin tone categories depending on their selected emoji modifier.
+The dataset for this question is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. A new variable is added to divide the users into different groups by their skin tone emoji modifier.
 
 ### Exploratory Plots
 
@@ -230,7 +235,11 @@ race_sleep_data$sex <- ifelse(is.na(race_sleep_data$sex), "Not Answered", race_s
 
 ```{r}
 # distribution of number of flags for each race 
-race_fig_1 <- race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone") + theme_minimal() + 
+race_fig_1 <- race_sleep_data %>% ggplot(aes(x = flags, fill=skin_tone)) + geom_histogram(bins = 30) + scale_fill_manual(values = skin_tone_palette) + facet_wrap("skin_tone", labeller = labeller(skin_tone = c("light" = "light",
+      "medium_light" = "medium light",
+      "medium" = "medium",
+      "medium_dark" = "medium dark",
+      "dark" = "dark"))) + theme_minimal() + 
   labs(title = "Distribution of Flags for each Emoji Modifier",
        x = "Number of Flags",
        y = "Count") + theme(legend.position="none") + theme(text = element_text(size = 6))
@@ -261,6 +270,7 @@ Figure 6B shows that darker emoji modifier users seem to have a larger spread an
 Figure 6C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
 ### Fitting a GLMM with Poisson Link Function
+Since the number of flags is a count variable and different individuals may have different random effects on the performance of the devices, we fit a generalized linear mixed model with the poisson link function to predict the mean number of flags for each emoji modifier group, accounting for all complications stated previously.
 
 #### Model Assumption Checks
 
@@ -288,7 +298,7 @@ We see that the variance of the number of flags transformed by the link function
 
 4.  Poisson link function is appropriate:
 
-From the Figure B above, we see that the number of flags (response variable) ranges from 0 to over 20, is right skewed, and can be modeled by Poisson distribution. We also check if the mean and variance of number of flags is equal for each skin tone:
+From the Figure 6B above, we see that the number of flags (response variable) ranges from 0 to over 20, is right skewed, and can be modeled by Poisson distribution. We also check if the mean and variance of number of flags is equal for each skin tone:
 
 ```{r, include = TRUE, echo=FALSE}
 # check mean and variance of number of flags for each skin tone (main effect)
@@ -333,7 +343,7 @@ expect_conf <- data.frame(expect_conf)
 knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"), caption = "Exponential of the confidence intervals for GLMM model")
 ```
 
-From the model, we see that the general trend is the darker one's emoji modifier is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light emoji modifier, we are 95% confident that, compared to light emoji modifier users, the mean number of flags for a user with the dark emoji modifier changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of emoji modifier predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of emoji modifiers. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
+From the model, we see that the general trend is the darker one's emoji modifier is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light emoji modifier, we are 95% confident that, compared to light emoji modifier users, the mean number of flags for a user with the dark emoji modifier changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of emoji modifier predictors are extremely small (close to 0), suggesting strong evidence against the fact that the mean number of flags are equal for different types of emoji modifiers. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
 
 ## Q3 What are the main differences between different lines of the device?
 
@@ -341,7 +351,7 @@ In this research question, we are interested in the differences of the **perform
 
 ### Data Manipulation
 
-We used three database in this part. The first one is dataset for device, which is retrieved by web scraping from the fitness tracker info hub. This database includes all the information on the devices produced by the company Mingar and Bitfit. The second database includes the data for individuals who bought the devices from Mingar. This database is obtained by merging the customer and devices ids database and customer info database. The third database used in this question includes the percentage of the devices having some functionality in each line. This dataset is built by group the first dataset by line and functionality. 
+There are three datasets in this part. The first dataset is for devices retrieved by web scraping from the fitness tracker info hub. This dataset contains information on the devices produced by Mingar and Bitfit. The second database holds the data for individuals who purchase the devices from Mingar. This database is obtained by merging the customers' and devices' ids database and customer info database. The third database includes the percentage of the devices having some functionality in each line. This dataset is built by grouping the first dataset by line and functionality. 
 
 ### Exploratory plots
 
@@ -352,22 +362,19 @@ device_cust <- read.csv("./data/device_cust.csv")
 device_performance <- read.csv("./data/device_performance.csv")
 ```
 
-```{r echo=FALSE, include=TRUE, fig.height=5, fig.width=5, fig.cap="Percentage of devices that have certain Functionalities for each Line"}
+```{r echo=FALSE, include=TRUE, fig.height=5, fig.width=5, fig.cap="Percentage of devices that have certain functionalities for each Line"}
 # All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
-              title = "Percentage of devices that have certain Functionalities for each Line",
+              title = "Percentage of devices that have certain functionalities for each Line",
               x="name", 
               y="line", 
               size = "percentage", 
-              fill = "percentage",
-              color = "percentage",
-              ggtheme = theme_minimal()) +
-  scale_fill_viridis_c(option = "E") +
-  scale_color_viridis_c(option = "E")
+              fill = "#ffbf34",
+              ggtheme = theme_minimal())
 ```
 
-The above plot shows the performance of different lines. The size of the circle is the percentage of devices in the line on x-axis that has the functionality on y-axis. Based on the plot, the line *Run* has all of the functionality, while line *Active* and *Advanced* has all except the pulse oximiter. By the size of each circle, the line *Run* has a more diverse functionality than the other two lines. Each device in line *Advanced* almost has the same functionality.
+Figure 8 above shows the performance of different lines. The size of the circle is the percentage of devices in the line on x-axis that has the functionality on y-axis. Based on the plot, the line *Run* has all of the functionalities, while line *Active* and *Advanced* has all except the pulse oximiter. By the size of each circle, the line *Run* has a more diverse functionality than the other two lines. Each device in line *Advanced* almost has the same functionality.
 
 ```{r echo=FALSE}
 # Recomended retail Price
@@ -427,17 +434,15 @@ ggarrange(p1, p2, p3, p4,
           ncol = 2, nrow = 2)
 ```
 
-**Plot 9A** above is a scatter plot showing the recommended retail price, released year and the lines. According to the plot, the line *Run* has the highest price in the range of \$300 - \$500, while line *Advanced* and *Active* has a much lower price from \$50 to \$150. The average price of all lines in *Mingar* is \$284.66. And the average price of all lines in *Bitfit* is \$180.90. By the plot A, the released year for the line *Run* is spread through the x-axis, while the line *Advanced* and *Active* only came out in the most recent 3 years.
+**Plot 9A** above is a scatterplot showing the recommended retail price, released year and the lines. According to the plot, the line Run has the highest price in the range of \$300 - \$500, while line Advanced and Active has a much lower price from \$50 to \$150. The average price of all lines in MINGAR is \$284.66. And the average price of all lines in BitFit is \$180.90. By the plot A, the released year for the line Run is spread through the x-axis, while the line Advanced and Active only came out in the most recent 3 years.
 
-**Plot 9B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line *Run* usually has the longest battery life, since most of the devices of *Run* has a battery life up to 14 days and more. However, the battery life of line *Advanced* and *Active* is shorter, which is about 5-14 days.
+**Plot 9B** is a bar chart showing the battery life for each line. Based on the plot, we noticed that line Run usually has the longest battery life, since most of the devices of Run has a battery life up to 14 days and more. However, the battery life of line Advanced and Active is shorter, which is about 5-14 days.
 
-**Plot 9C** is a also a bar chart showing the performance of waterproof. Line *Run* has a better waterproof performance, all devices from *Run* has a waterproof of 5ATM-10ATM, while devices from line *Advanced* and *Active* are only water resistant, which is the lowest level of waterproof.
+**Plot 9C** is a also a bar chart showing the performance of waterproof. Line Run has a better waterproof performance, all devices from Run has a waterproof of 5ATM-10ATM, while devices from line Advanced and Active are only water resistant, which is the lowest level of waterproof.
 
-**Plot 9D** shows the popularity of each line in *Mingar*. From the bar chart, we can conclude that the line *Run* and *Advanced* are the two most popular line in *Mingar.* And the sales of *Run* is slightly greater than *Advanced.*
+**Plot 9D** shows the popularity of each line in MINGAR. From the bar chart, we can conclude that the line Run and Advanced are the two most popular line in MINGAR. And the sales of Run is slightly greater than Advanced.
 
-### Conclusions
-
-Above all, we noticed that the line *Run* and *Advanced* are the most popular lines at *Mingar.* Line *Run* has an overall better performance and a higher price among all other lines. Run is one of the earliest lines the company started producing, thus, line *Run* has 9 devices, which is the line having most products. Line *Active* and *Advanced* are two new lines that came out in the most recent 3 years. There are only 5 devices for the line *Advanced* and *Active.* However, the total sales of line *Advanced* and *Active* is more than that of line *Run.* The result implies that when the devices with sufficient functionality, price is the major factor for number of sales.
+Above all, we noticed that the line Run and Advanced are the most popular lines at MINGAR. Line Run has an overall better performance and a higher price among all other lines. Run is one of the earliest lines the company started producing, thus, line Run has 9 devices, which is the line having most products. Line Active and Advanced are two new lines that came out in the most recent 3 years. There are only 5 devices for the line Advanced and Active. However, the total sales of line Advanced and Active is more than that of line Run. The result implies that when the devices with sufficient functionality, price is the major factor for number of sales.
 
 ## Discussion
 
@@ -453,11 +458,11 @@ At MANGO, one of our greatest strengths is that we take ethical data practices e
 
 In addition, we were meticulous about checking all model assumptions before making a prediction. We also used one of the most considerate models -- generalized linear mixed models -- to not only take account of the speciality in our response variable and the individual random effect differences, being considerate and careful in the conclusions that we make.
 
-However, there are several limitations in our analysis. The first limitation is that the Kruskal Wallis Test, used in the first research question to identify age distributions among different product lines, does not meet the model assumption of same shape distributions, as the age distribution of the “Active” line resembles a binomial distribution, while the remaining three product lines appear relatively normal. We can potentially attribute this violation to the lack of available data collected on the “Active” line.
+However, there are several limitations in our analysis. The first limitation is that the Kruskal Wallis Test, used in the first research question to identify age distributions among different product lines, does not meet the model assumption of same shape distributions, as the age distribution of the “Active” line resembles a bimodal distribution, while the remaining three product lines appear relatively normal. We can potentially attribute this violation to the lack of available data collected on the “Active” line.
 
 Another important caveat for interpreting our study is that emoji-modifiers were used as a proxy for ethnicity due to lack of data. MANGO suggests MINGAR to introduce a personalized cartoon avatar profile feature, similar to Apple’s Memoji feature, where users can choose to create realistic avatar profiles that look like themselves. This avatar feature will likely be a more powerful proxy for race and ethnicity than the current skin tone emoji-modifier. 
 
-A final limitation is that the postal codes extracted from PCCF are dated (2016). Plus, they represent mailing addresses, not necessarily residential addresses of customers, and therefore may not be accurate when being used as a proxy to infer the income levels of customers. 
+A final limitation is that the postal codes extracted from PCCF represent mailing addresses, not necessarily residential addresses of customers, and therefore may not be accurate when being used as a proxy to infer the income levels of customers. 
 
 \newpage
 
