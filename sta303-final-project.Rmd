@@ -55,16 +55,30 @@ knitr::opts_chunk$set(include=FALSE)
 
 \newpage
 
-# Executive summary
+## Background and aim 
+MANGO was hired to generate insights for MINGAR’s marketing and product considerations. The purposes of this report are threefold: (1) to identify demographic characteristics of buyers of MINGAR’s two newer, more affordable lines of fitness tracking wearables, “Active” and “Advance”; (2) to investigate potential performance issues with sleep scores in darker skin users; and (3) to understand product features that drive sales.
 
-*Guidelines for the executive summary:*
+The rest of this summary presents key findings and highlights limitations. 
 
--   *No more than two pages*
--   *Language is appropriate for a non-technical audience*
--   *Bullet points are used where appropriate*
--   *A small number of key visualizations and/or tables are included*
--   *All research questions are addressed*
+## Key findings
 
+- Customers of the new affordable “Active” and “Advance” lines are most populated in Ontario, followed by Alberta and Quebec (Table 1).
+
+- The new “Active” and “Advance” product lines sell most in lower-income neighborhoods, meeting marketing goals.
+
+- Female customers make up the majority of the customer case across all product lines (Table 1).
+
+- Customers with darker skin emoji-modifiers have a larger mean number of flags during a sleep session when compared to those with lighter skin emoji-modifiers (Figure1).
+
+- Despite recent launches, lower price points, and less features, the combined sales of “Active” and “Advance” top all other product lines. 
+
+## Limitations
+
+- Emoji-modifiers were used to predict customer skin tone, therefore limiting the ability to make generalizations on the basis of race and ethnicity.
+
+- Due to the lack of data, customer income was made equivalent to the median household income based on postal code, therefore may not be reflective of an individual customer's true income level.
+
+\newpage
 ```{r include=TRUE, echo=FALSE}
 t<- tribble(~"",~"Old Line", ~"New Line",
   "Location", "Ontario, followed by Quebec, Alberta and British Columbia", "Ontario, followed by Alberta, Quebec and British Columbia",
@@ -75,27 +89,27 @@ t<- tribble(~"",~"Old Line", ~"New Line",
 knitr::kable(t, caption = "Demographics of customers in old and new line")
 ```
 
-*The [module 4 writing prompt](https://sta303-bolton.github.io/sta303-w22-courseguide/knowledge-basket-writing-and-peer-feedback.html#module-4-writing-task) provides some tips and information about writing executive summaries.*
-
 \newpage
 
 # Technical report
 
-*This part of the report is much more comprehensive than the executive summary. The audience is statistics/data-minded people, but you should NOT include code or unformatted R output here.*
-
 ## Introduction
 
-*Provide a brief introduction to your report and outline what the report will cover. This section is valuable for setting scope and expectations.*
+Since the early 2000s, MINGAR has been growing its business in the fitness tracker space. Recently, MINGAR has expanded its business to launch two new lines of products, “Active” and “Advance”, both set at a more approachable price point than the traditional high-end product lines. In addition to helping MINGAR understand its new customer base and potential issues around product features better, we conduct data-driven customer and product analyses with goals to inform marketing strategies, help MINGAR stay competitive in the fitness tracker space, and expand its market share in the Canadian market.
+
+Our review and assessments involve internal data on customer demographics provided by MINGAR, as well as external data, including Census Canada postal code conversion file (PCCF) of 2021, household median income data acquired from the 2016 Canadian census, and industry standard device and feature data acquired from the Fitness Tracker Info Hub. 
+
+In the following sections, the aforementioned datasets will be used to answer three research questions, with each detailing data manipulation, statistical methods, and conclusions. A summary of findings across the three questions will be presented in the Discussion section, along with the strengths and limitations of the analysis. 
 
 ### Research questions
 
 -   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
 
--   How does skin color (identified by one's emoji modifiers) affect the number of quality flags that MINGAR wearable devices report during a sleep tracking session?
+-   How do skin tone emoji modifiers affect performance accuracy of wearable devices?
 
 -   What are the main differences between different lines of the device?
 
-## What is the demographic of different lines of product?
+## Q1: What are the demographic characteristics of MINGAR customers across different product lines?
 
 ### Location of customers
 
@@ -107,7 +121,7 @@ In Figure 1, the size of the bubble is proportional to percentage of customers i
 device_cust <-read.csv("./data/device_cust.csv")
 ```
 
-```{r}
+```{r, message = FALSE}
 province <- c(10, 11, 12, 13, 24, 35, 46, 47, 48, 59, 60, 61, 62)
 province_name <- c("Newfoundland and Labrador", "Prince Edward Island","Nova Scotia", "New Brunswick", "Quebec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "British Columbia", "Yukon", "Northwest Territories", "Nunavut")
 latitude <- c(53.5, 46, 45, 46.498390, 53, 50, 56.415211, 55, 55, 53.726669, 64, 62.135189, 70.453262)
@@ -458,9 +472,21 @@ Above all, we noticed that the line *Run* and *Advanced* are the most popular li
 
 ## Discussion
 
-*In this section you will summarize your findings across all the research questions and discuss the strengths and limitations of your work. It doesn't have to be long, but keep in mind that often people will just skim the intro and the discussion of a document like this, so make sure it is useful as a semi-standalone section (doesn't have to be completely standalone like the executive summary).*
+Findings from research question 1 suggest that buyers of MINGAR’s newer affordable lines “Active” and “Advance” tend to come from a lower-income region, therefore meeting the marketing goal of attracting customers outside of the traditionally higher-income base. Further, customers across all four product lines do not have the same median age. Specifically, the “Active” line appeals most to users in two distinctive age groups: mid-20s and 60s. Moreover, Ontario tops the customer base across all lines, followed by Alberta and Quebec in the two new lines. Therefore, we suggest MINGAR to continue expanding its marketing efforts in these provinces.
+
+Results from research question 2 indicate that MINGAR’s devices are significantly less accurate at tracking sleep scores of dark skin emoji-modifiers than those of light skin emoji-modifiers, implying that the devices may have great potential to perform more poorly on dark skin individuals. In anticipation of future complaints, we suggest MINGAR prepare contingency plans, such as creating a Frequently Asked Questions page to assure users that this is a known technical challenge MINGAR is actively working to resolve. 
+
+Lastly, from research question 3, we observe “Run” and “Advanced'' to be the most popular lines among users of MINGAR. However, despite the recent launch of “Active” and “Advance”, their combined sales have exceeded the sales of “Run”, the traditional high-end line with most features. These results imply that customers tend to favour approachable price points over functionality when choosing a device. 
 
 ### Strengths and limitations
+
+At MANGO, one of our greatest strengths is that we take ethical data practices extremely seriously. In particular, we have a track record of handling identity-based data with sensitivity, integrity, and tact, which is demonstrated in all our past and current collaboration projects and also consistent with MINGAR’s values. 
+
+However, there are several limitations in our analysis. The first limitation is that the Kruskal Wallis Test, used in the first research question to identify age distributions among different product lines, does not meet the model assumption of same shape distributions, as the age distribution of the “Active” line resembles a binomial distribution, while the remaining three product lines appear relatively normal. We can potentially attribute this violation to the lack of available data collected on the “Active” line.
+
+Another important caveat for interpreting our study is that emoji-modifiers were used as a proxy for ethnicity due to lack of data. MANGO suggests MINGAR to introduce a personalized cartoon avatar profile feature, similar to Apple’s Memoji feature, where users can choose to create realistic avatar profiles that look like themselves. This avatar feature will likely be a more powerful proxy for race and ethnicity than the current skin tone emoji-modifier. 
+
+A final limitation is that the postal codes extracted from PCCF are dated (2016). Plus, they represent mailing addresses, not necessarily residential addresses of customers, and therefore may not be accurate when being used as a proxy to infer the income levels of customers. 
 
 \newpage
 
@@ -468,18 +494,21 @@ Above all, we noticed that the line *Run* and *Advanced* are the most popular li
 
 ## Consultant profiles
 
-*Complete this section with a brief bio for each member of your group. If you are completing the project individually, you only need to complete one for yourself. In that case, change the title of this section to 'Consultant profile' instead. Examples below. This section is only marked for completeness, clarity and professionalism, not 'truth' so you can write it as if we're a few years in the future. Put your current degree in as completed and/or add your first choice grad school program, whatever you like. What skills related skills would you most like to highlight? What job title do you want?*
+**Xinyi Chen**. Xinyi is a senior data scientist with MANGO. She specializes in data modeling. Xinyi earned her Bachelor of Science, Specialist in Computer Science from the University of Toronto in 2020. 
 
-**Statsy McStatsstats**. Statsy is a senior consultant with Eminence Analytics. She specializes in data visualization. Statsy earned her Bachelor of Science, Specialist in Statistics Methods and Practice, from the University of Toronto in 2023.
+**Rui Miao**. Rui is a senior data engineer with MANGO. She specializes in data wrangling. Rui earned her Bachelor of Science, Majoring in Computer Science from the University of Toronto in 2021. 
 
-**Datana Scatterplot**. Datana is a junior consultant with Eminence Analytics. They specialize in reproducible analysis and statistical communication. Datana earned their Bachelor of Science, Majoring in Computer Science and Statistics from the University of Toronto in 2024.
+**Xinpang Shan**. Xinpang is a junior consultant with MANGO. She specializes in reproducible analysis. Xinpang earned her Bachelor of Science, Specialist in Data Science from the University of Toronto in 2021. 
+
+**Iris Shao**. Iris is an associate consultant intern with MANGO. She specializes in statistical communication. Iris earned her Bachelor of Science, Majoring in Statistics and Minoring in Digital Humanities from the University of Toronto in 2022. 
 
 ## Code of ethical conduct
 
-*This section should be fairly short, no more than half a page. Assume a general audience, much like your executive summary.*
+- MANGO strictly adheres to privacy laws or regulations surrounding the collection, storage, and reporting of data and results.
 
--   *Make at least three relevant statements about your company's approach to ethical statistical consulting. These should be appropriately in line with professional conduct advice like the (Statistical Society of Canada Code of Conduct)[<https://ssc.ca/sites/default/files/data/Members/public/Accreditation/ethics_e.pdf>] or the (Ethical Guidelines for Statistical Practice from the American Statistical Society)[<https://www.amstat.org/ASA/Your-Career/Ethical-Guidelines-for-Statistical-Practice.aspx>]. For example, "the customer is always right" ISN'T the type of thing an ethical statistical consultant would include.*
--   *Be very careful not to just copy and paste from these other documents! Put things in your own words.*
+- MANGO maintains the highest standards of ethical statistical practice in satisfying the requirements of the client and disclosing any potential conflict of interest in a timely manner.  
+
+- MANGO strives to refrain from procedural bias and any misrepresentation of findings.
 
 \newpage
 
