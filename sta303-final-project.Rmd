@@ -1,7 +1,7 @@
 ---
 title: "Report title"
 subtitle: "Subtitle that indicates findings"
-author: "Report prepared for MINGAR by [MANGO]"
+author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-07
 lang: "en"
 output:
@@ -11,9 +11,9 @@ output:
     toc_depth: 2
     
 titlepage: true
-titlepage-color: "6C3082"
-titlepage-text-color: "FFFFFF"
-titlepage-rule-color: "FFFFFF"
+titlepage-color: "F4BB44"
+titlepage-text-color: "000000"
+titlepage-rule-color: "000000"
 titlepage-rule-height: 2
 ---
 
@@ -245,7 +245,7 @@ race_fig_3 <- race_sleep_data %>% ggplot(aes(x = duration, y = flags, colour = s
 ggarrange(race_fig_2, ggarrange(race_fig_1, race_fig_3, labels = c("B", "C"), ncol = 1, nrow = 2), labels = c("A"))
 ```
 
-Figure A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males and intersex users. Most users use the Advance or Run lines.
+Figure A shows that there are more light emoji modifier users than dark emoji modifier users and there are more females than males. Most users use the Advance or Run lines.
 
 Figure B shows that darker emoji modifier users seem to have a larger spread and larger mean of number of flags than compared to lighter emoji modifier users, suggesting some evidence of a performance bias.
 
@@ -346,6 +346,7 @@ device_performance <- read.csv("./data/device_performance.csv")
 # All binary performance
 library(ggpubr)
 ggballoonplot(device_performance, 
+              title = "Percentage of devices that have certain Functionalities for each Line",
               x="name", 
               y="line", 
               size = "percentage", 
@@ -364,24 +365,25 @@ p1 <- device_data %>%
   ggplot(aes(x = released_yr, y = recommended_retail_price, color = line, shape = brand)) +
   geom_point(size = 2) +
   scale_color_brewer(palette="Set3") +
-  labs(x = "Released Year",
+  labs(title = "Released Year v.s. Price by each Line",
+       x = "Released Year",
        y = "Price") +
   theme(text = element_text(size = 15))+
-  theme_minimal()
+  theme_minimal() + theme(text = element_text(size = 6))
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# Calculate the mean price for each company
-mingar <-  device_data %>% 
-              na.omit() %>% 
-              filter(brand == "Mingar") %>% 
-              summarise(mean=mean())
-mean(mingar$recommended_retail_price)
-bitfit <-  device_data %>% 
-              na.omit() %>% 
-              filter(brand == "Bitfit") %>% 
-              select(recommended_retail_price)
-mean(bitfit$recommended_retail_price)
+# # Calculate the mean price for each company
+# mingar <-  device_data %>%
+#               na.omit() %>%
+#               filter(brand == "Mingar") %>%
+#               summarise(mean=mean())
+# mean(mingar$recommended_retail_price)
+# bitfit <-  device_data %>%
+#               na.omit() %>%
+#               filter(brand == "Bitfit") %>%
+#               select(recommended_retail_price)
+# mean(bitfit$recommended_retail_price)
 ```
 
 ```{r echo=FALSE}
@@ -404,9 +406,10 @@ p2 <- device_data %>%
   geom_bar(stat="count") +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
-  labs(x = "Released Year",
+  labs(title = "Num of Devices with each Battery Life Type for each Line",
+       x = "Count",
        y = "Battery Life") +
-  theme_minimal()
+  theme_minimal() + theme(text = element_text(size = 6))
 ```
 
 ```{r}
@@ -416,19 +419,20 @@ p3<-device_data %>%
   geom_bar(stat="count") +
   scale_color_brewer(palette="Set3") +
   scale_fill_brewer(palette="Set3") +
-  labs(x = "Released Year",
+  labs(title = "Num of Devices with each Waterproof Type for each Line",
+       x = "Count",
        y = "Waterproof") +
-  theme_minimal()
+  theme_minimal() + theme(text = element_text(size = 6))
 ```
 
 ```{r}
 # Sales for each line
 p4<-device_cust %>% 
-  ggplot(aes(y=line))+
-  geom_bar() +
-  labs(x = "Sales",
-       y = "Line",
-       caption = "Created by Mango in 2022")
+  ggplot(aes(y=line, fill = line))+
+  geom_bar() + scale_fill_brewer(palette="Set3") +
+  labs(title = "Number of Sales for each Line",
+       x = "Sales",
+       y = "Line") + theme_minimal() + theme(text = element_text(size = 6))
 ```
 
 ```{r echo=FALSE, include=TRUE}
