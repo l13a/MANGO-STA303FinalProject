@@ -41,28 +41,29 @@ knitr::opts_chunk$set(include=FALSE)
 
 # General comments (you can delete this section)
 
-_Before making any changes, knit this Rmd to PDF and change the name of the PDf to something like 'original-instructions.pdf', or whatever you like (it is just for your reference).. Then you can delete this section and if you want to check what it said, just open the other PDF. You don't HAVE to use this particular template, but you DO need to write you report in RMarkdown and include a cover page._
+*Before making any changes, knit this Rmd to PDF and change the name of the PDf to something like 'original-instructions.pdf', or whatever you like (it is just for your reference).. Then you can delete this section and if you want to check what it said, just open the other PDF. You don't HAVE to use this particular template, but you DO need to write you report in RMarkdown and include a cover page.*
 
-_The cover page must be a single stand alone page and have:_
+*The cover page must be a single stand alone page and have:*
 
-*	_A title and subtitle (that indicate your findings)_
-* _"Report prepared for MINGAR by" your company name_
-*	_Date (assessment submission date is fine)_
+-   *A title and subtitle (that indicate your findings)*
+-   *"Report prepared for MINGAR by" your company name*
+-   *Date (assessment submission date is fine)*
 
-_You can change the colour of this cover to any colour you would like by replacing 6C3082 in the YAML above (`titlepage-color:`) to another hex code. You could use this tool to help you:_ https://htmlcolorcodes.com/color-picker/
+*You can change the colour of this cover to any colour you would like by replacing 6C3082 in the YAML above (`titlepage-color:`) to another hex code. You could use this tool to help you:* <https://htmlcolorcodes.com/color-picker/>
 
-_Note: There should NOT be a table of contents on the cover page. It should look like a cover._
+*Note: There should NOT be a table of contents on the cover page. It should look like a cover.*
 
 \newpage
+
 # Executive summary
 
-_Guidelines for the executive summary:_
+*Guidelines for the executive summary:*
 
-* _No more than two pages_
-* _Language is appropriate for a non-technical audience_
-* _Bullet points are used where appropriate_
-*	_A small number of key visualizations and/or tables are included_
-*	_All research questions are addressed_
+-   *No more than two pages*
+-   *Language is appropriate for a non-technical audience*
+-   *Bullet points are used where appropriate*
+-   *A small number of key visualizations and/or tables are included*
+-   *All research questions are addressed*
 
 ```{r include=TRUE, echo=FALSE}
 t<- tribble(~"",~"Old Line", ~"New Line",
@@ -74,34 +75,34 @@ t<- tribble(~"",~"Old Line", ~"New Line",
 knitr::kable(t, caption = "Demographics of customers in old and new line")
 ```
 
-
-
-_The [module 4 writing prompt](https://sta303-bolton.github.io/sta303-w22-courseguide/knowledge-basket-writing-and-peer-feedback.html#module-4-writing-task) provides some tips and information about writing executive summaries._
-
+*The [module 4 writing prompt](https://sta303-bolton.github.io/sta303-w22-courseguide/knowledge-basket-writing-and-peer-feedback.html#module-4-writing-task) provides some tips and information about writing executive summaries.*
 
 \newpage
-# Technical report
-_This part of the report is much more comprehensive than the executive summary. The audience is statistics/data-minded people, but you should NOT include code or unformatted R output here._
 
+# Technical report
+
+*This part of the report is much more comprehensive than the executive summary. The audience is statistics/data-minded people, but you should NOT include code or unformatted R output here.*
 
 ## Introduction
 
-_Provide a brief introduction to your report and outline what the report will cover. This section is valuable for setting scope and expectations. _
+*Provide a brief introduction to your report and outline what the report will cover. This section is valuable for setting scope and expectations.*
 
 ### Research questions
-- How do the demographic for the traditional lines compare with that of the “Active and “Advance” lines?
 
-- Are the devices “racist”?
+-   How do the demographic for the traditional lines compare with that of the "Active and "Advance" lines?
 
-- What are the main differences between different lines of the device?
+-   Are the devices "racist"?
 
+-   What are the main differences between different lines of the device?
 
 ## What is the demographic of different lines of product?
 
 ### Location of customers
+
 To create the plot that demonstrate the location of users in different production line, we combined the user dataset with web script Census Canada Postal Code Conversion dataset by postcode. We can therefore generate the province that the user belongs to by extracting the first two digit of CSDuid (Census subdivision unique identifier) from the Census dataset.
 
 In Figure 1, the size of the bubble is proportional to percentage of customers in each province in that line and the position of each bubble represents the latitude and longtitude of that province. From the plot, we can notice that Ontario has the most users in all four lines. In Active line and Advance line, The users in Quebec is slightly less than ones in Ontario, but in Run line, the number of users in Alberta exceeds the number of users in Quebec. From the result, we are able to see where the target customers is located for product in different lines.
+
 ```{r}
 device_cust <-read.csv("./data/device_cust.csv")
 ```
@@ -141,8 +142,6 @@ province_data_idol <- province_data[province_data$line == "iDOL",]
 
 ![Customer location by device line](./data/province_line.png)
 
-
-
 ### Age of customers
 
 ```{r fig.cap="Age of customer by device line", include=T, echo=F, fig.height=3}
@@ -154,9 +153,9 @@ To get a sense of how the age of customers is distributed in different lines, we
 
 #### Assumption Checking
 
-- It satisfies the assumptions that there are two or more levels in the independent variable `line`, the dependent variable,`age`, is on a ratio scale and the observations are independent.
+-   It satisfies the assumptions that there are two or more levels in the independent variable `line`, the dependent variable,`age`, is on a ratio scale and the observations are independent.
 
-- The fourth assumption is that all groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
+-   The fourth assumption is that all groups should have same shape distributions. In our case, three of the groups have same shape distribution, while Active line have a bimodal distribution, which may be caused by the lack of data. It is a limitation in the model assumption checking process.
 
 #### Kruskal Wallis Test
 
@@ -183,6 +182,7 @@ We conducted a two sample t-test on it. The mean in group `new` and group `old` 
 device_cust$sex_binary <-  ifelse(device_cust$sex == "Female", 1, 0)
 t.test(sex_binary~ line_binary, data = device_cust, var.equal = TRUE)
 ```
+
 ### Income of customers
 
 ```{r fig.cap="Household income of customer by device line", include=T, echo=F, fig.height=2}
@@ -201,9 +201,10 @@ t.test(hhld_median_inc~ line_binary, data = group_income, var.equal = TRUE)
 
 From the two sample t-test, the mean income in group `new` and group `old` is 68815.47 and 73166.18 respectively with a p-value of $2.2^{-16}$. Thus, we reject the hypothesis that the two groups have the same mean in income and we can see that the customers who buy products from the new line have around 4000 less mean income than those who buy from the old line.
 
-
 ## How does skin color affect the accuracy of wearable devices?
+
 ### Data Manipulation
+
 The dataset "race_sleep_data" is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. The newly added variable "skin_tone" divides the users to different skin tone categories depending on their selected emoji modifier.
 
 ### Exploratory Plots
@@ -251,10 +252,12 @@ Figure B shows that darker skinned users seem to have a larger spread and larger
 Figure C shows that there is not much relationship between duration of sleep and number of flags, indicating that duration may not be an important predictor for the number of flags.
 
 ## Fitting a GLMM with Poisson Link Function
+
 ### Model Assumption Checks
+
 1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population
 2.  Random Effects (each individual) come from a normal distribution
-3.  Random Effect errors have constant variance: 
+3.  Random Effect errors have constant variance:
 
 ```{r, include = TRUE, echo = FALSE, message=FALSE, fig.align='left', fig.width=4, fig.height = 3}
 temp_race_sleep_data <- race_sleep_data %>% 
@@ -285,6 +288,7 @@ mean_var_check <- data.frame(mean_var_check)
 
 knitr::kable(mean_var_check, align = 'c', col.names = c("Skin Tone  ","  Mean(# of flags)  ", "  Var(# of flags)  ", "  Number of Observations"))
 ```
+
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
 
 ### Model Fitting
@@ -294,10 +298,9 @@ $$\begin{aligned}Y_{irs} &\thicksim Poisson(\lambda_{irs})\\
 U_i &\thicksim N(0, \sigma ^2) 
 \end{aligned}$$
 
-
-- $Y_{irs}$ is the number of flags for individual $i$ with skin tone $r$ and sex $s$
-- $X_{irs}$ has indicator variables for skin tone and sex
-- $U_i$ is the individual level random effect
+-   $Y_{irs}$ is the number of flags for individual $i$ with skin tone $r$ and sex $s$
+-   $X_{irs}$ has indicator variables for skin tone and sex
+-   $U_i$ is the individual level random effect
 
 ```{r}
 
@@ -319,7 +322,8 @@ expect_conf <- data.frame(expect_conf)
 knitr::kable(expect_conf, align = 'c', col.names = c("2.5%", "97.5%"))
 
 ```
-From the model, we see that the general trend is the darker one is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light skin tone, we are 95% confident that, compared to light skinned users, the mean number of flags for a user with the dark skin tone changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of skin tone predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of skin tones. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users. 
+
+From the model, we see that the general trend is the darker one is, the higher the log of the mean number of flags their devices report. For example, compared to the base line of the light skin tone, we are 95% confident that, compared to light skinned users, the mean number of flags for a user with the dark skin tone changes by a factor of between (9.77, 10.65), which is about ten times more. The p-values for each level of skin tone predictors are extremely small, suggesting strong evidence against the fact that the mean number of flags are equal for different types of skin tones. We also observe that there is a (1 - 0.91) x 100% = 9% decrease in the mean number of flags for males compared to females; however, this result may just be due to the relatively fewer data for male users than for female users.
 
 ## What are the main differences between different lines of the device?
 
@@ -489,11 +493,13 @@ Above all, we noticed that the line *Run* and *Advanced* are the most popular li
 
 ## Accessing Census data on median household income
 
-### API access 
+### API access
 
-We used APIs to get the data from the Canadian census website. First, we signed up for the cancensus API through the website and get the API key for our account.
+We used APIs to get the data from the Canadian census website. We signed up for the cancensus API through the website and get the API key for our account, and used the API key to fetch the income data.
 
 ### Ethical Professional consideration
+
+Based on the policy on the website, data on CensusMapper can be freely linked or downloaded through the provided interface. And we are allowed to explore census variables ans data for specific geographic. In our research, we respects the policy posted on the website, we used the data to reproduce new dataset, and analyze our research questions based on the data.
 
 ## Accessing postcode conversion files
 
