@@ -2,7 +2,7 @@
 title: "Customer Demographics and Product Performance of MINGAR devices"
 subtitle: "Potential performance bias for users with different emoji modifiers"
 author: "Report prepared for MINGAR by MANGO"
-date: 2022-04-07
+date: 2022-04-11
 lang: "en"
 output:
   pdf_document:
@@ -281,7 +281,6 @@ temp_race_sleep_data <- data.frame(temp_race_sleep_data)
 temp_race_sleep_data %>% ggplot(aes(y = var)) + geom_boxplot() + scale_colour_manual(values = skin_tone_palette) + theme_minimal() + 
   labs(title = "Spread of the Variance of Log(# of flags) for each user",
        y = "Var(Log(# of flags))") + theme(legend.position="none") + theme(text = element_text(size = 7))
-
 ```
 
 We see that the variance of the number of flags transformed by the link function (log) is mostly the same with little spread across individuals. This suggests that the homoscedasiticy of random effect errors assumption is satisfied.
