@@ -1,5 +1,5 @@
 ---
-title: "Customer Demographics and Product Performance Analysis of MINGAR Products"
+title: "Customer Demographics and Performance Analysis of MINGAR Products"
 subtitle: "Successful launch of affordable products lines and potential performance bias in users with dark skin emoji-modifiers"
 author: "Report prepared for MINGAR by MANGO"
 date: 2022-04-11
@@ -213,11 +213,11 @@ We use a two sample t-test for reasons similar to above. From the two sample t-t
 
 ## Q2 How does emoji modifier color relate to the accuracy of wearable devices?
 
-### Data Manipulation
+### Data manipulation
 
 The dataset for this question is obtained through combining the customer profiles, the sleep tracking, and the device data. The names are cleaned and only variables relating to quality and customer attributes are selected. A new variable is added to divide the users into different groups by their skin tone emoji modifier.
 
-### Exploratory Plots
+### Exploratory plots
 
 ```{r}
 #load dataset
@@ -272,7 +272,7 @@ Figure 6C shows that there is not much relationship between duration of sleep an
 ### Fitting a GLMM with Poisson Link Function
 Since the number of flags is a count variable and different individuals may have different random effects on the performance of the devices, we fit a generalized linear mixed model with the poisson link function to predict the mean number of flags for each emoji modifier group, accounting for all complications stated previously.
 
-#### Model Assumption Checks
+#### Model assumption checks
 
 1.  Independence of Subjects: the independence of subjects assumption is satisfied as we assume that every customer is independent from each other and are randomly selected from the population
 2.  Random Effects (each individual) come from a normal distribution
@@ -311,7 +311,7 @@ knitr::kable(mean_var_check, align = 'c', col.names = c("Emoji Modifier  ","  Me
 
 We do observe some evidence of a violation of the mean=variance assumption; however, any violations are modest. Hence, the Poisson model is appropriate in this case.
 
-#### Model Fitting
+#### Model fitting
 
 $$\begin{aligned}Y_{irs} &\thicksim Poisson(\lambda_{irs})\\
 \log(\lambda_{irs}) &= \beta_0 + X_{irs}\beta + U_{i}\\
@@ -349,7 +349,7 @@ From the model, we see that the general trend is the darker one's emoji modifier
 
 In this research question, we are interested in the differences of the **performance/price** among the different lines of services, combined with the different demographic of the users between lines, we can give a report summary/advice for what has changed and how the change affects the target audience.
 
-### Data Manipulation
+### Data manipulation
 
 There are three datasets in this part. The first dataset is for devices retrieved by web scraping from the fitness tracker info hub. This dataset contains information on the devices produced by Mingar and Bitfit. The second database holds the data for individuals who purchase the devices from Mingar. This database is obtained by merging the customers' and devices' ids database and customer info database. The third database includes the percentage of the devices having some functionality in each line. This dataset is built by grouping the first dataset by line and functionality. 
 
@@ -581,5 +581,3 @@ Based on the policy on the website, data on CensusMapper can be freely linked or
 
 ## Accessing postcode conversion files
 We chose to download the census data from August,2021. We want the most recent postcode data from the Census since we want the most up to date information about where people are living. We joined only filtered out the relevant postcode conversion data that matches with customers in our data. 
-
-**Final advice: KNIT EARLY AND OFTEN!**
