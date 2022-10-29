@@ -56,7 +56,7 @@ url <- "https://fitnesstrackerinfohub.netlify.app/"
 
 # Provide the appropriate user agent for web scraping the data
 target <- bow(url,
-              user_agent = "xinyil.chen@mail.utoronto.ca for STA303/1002 project",
+              user_agent = "xxxxxxxxx@mail.utoronto.ca for STA303/1002 project",
               force = TRUE)
 
 # Any details provided in the robots text on crawl delays and 
